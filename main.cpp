@@ -1,43 +1,41 @@
-// FCAI - Structured programming - 2024 - Assignment 3
-
-// Program Name : CS112_A3_Part2B_S18_20230060_S17_20230069_S17_20230043.cpp
 // Program Discription : This program do the Hero level and 15 filters of baby photoshop in assignment 3
 
 // Last Modification Date : 10/4/2024
 
-// Author1 : Eslam Saeed    ID : 20230060     Group : 18
-// Author2 : Adham Hamdy    ID : 20230043     Group : 17
-// Author3 : Andrew Wafae   ID : 20230069     Group : 17
-
-// Teaching Assistant : Ahmed Fouad M. Farid Lotfy
+// Author1 : Adham Hamdy
+// Author2 : Eslam Saeed
+// Author3 : Andrew Wafae
 
 // Eslam Saeed :  2, 5, 8, 11
 // Adham Hamdy :  1, 4, 7, 10, 13
 // Andrew Wafae : 3, 6, 9, 12, 14, 15
 
-// GitHub for our project
-// https://github.com/adhamhamdy333/Assignment-3.git
+// GUI Made by: Adham Hamdy
 
 // System Diagram
 // https://bit.ly/3Uj0Uda
 
-#include <bits/stdc++.h> // Include necessary headers
-using namespace std; // Use the standard namespace
-#include "Image_Class.h" // Include the custom Image class header
+#include <iostream>
+#include <vector>
+#include <map>
+#include <limits>
+#include <regex>
+#include <iomanip>
+#include <random>
+#include <algorithm>
+#include "Image_Class.h"
+using namespace std;
 
-// Function declarations
-Image load_image(const string& filename); // Load an image from file
-void save_image(Image& output_image); // Save an image to file
 
-// Functions to get integer inputs with different constraints
+Image load_image(const string& filename);
+void save_image(Image& output_image);
+
 int get_int(const string& prompt, int l = INT_MIN, int r = INT_MAX);
 int get_int(const string& prompt, vector <int> value_list);
-string get_valid_image_filename(const string& prompt, bool existing = false); // Get a valid image filename
+string get_valid_image_filename(const string& prompt, bool existing = false);
 
-// Function to display a progress bar
 void display_progress_bar(int current_index, int max_index, string optional_title = "");
 
-// Image processing functions
 void grayscale(Image& input_image, Image& output_image);
 void black_and_white(Image& input_image, Image& output_image);
 void invert(Image& input_image, Image& output_image);
@@ -54,7 +52,6 @@ void sunlight(Image& input_image, Image& output_image);
 void oil_painting(Image& input_image, Image& output_image);
 void old_tv(Image& input_image, Image& output_image);
 
-// Main function
 int main()
 {
     // Infinite loop for menu-driven program
