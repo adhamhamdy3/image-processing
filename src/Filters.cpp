@@ -479,7 +479,7 @@ void Filters::old_tv(Image &input_image, Image &output_image) {
             {
                 for (int k = 0; k < input_image.channels; k++) {
                     double pixel_value = input_image(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);  // Add noise and adjust blue channel
-                    output_image(j, i, k) = clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
+                    output_image(j, i, k) = Utilities::clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
                 }
             }
             else
@@ -487,7 +487,7 @@ void Filters::old_tv(Image &input_image, Image &output_image) {
                 for (int k = 0; k < input_image.channels; k++)
                 {
                     double pixel_value = input_image(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);  // Add noise with different intensity
-                    output_image(j, i, k) = clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
+                    output_image(j, i, k) = Utilities::clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
                 }
             }
         }

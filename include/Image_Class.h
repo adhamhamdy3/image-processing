@@ -115,6 +115,42 @@ public:
         this->imageData = (unsigned char*)malloc(mWidth * mHeight * this->channels);
     }
 
+    /**
+     * @brief Constructor that creates an image by copying another image.
+     *
+     * @param other The Image we want to copy.
+     */
+    Image(const Image& other) {
+        *this = other;
+    }
+
+    /**
+     * @brief Overloading the assignment operator.
+     *
+     * @param image The Image we want to copy.
+     *
+     * @return *this after copying data.
+     */
+
+    Image& operator=(const Image& image) {
+        if (this == &image){
+            return *this;
+        }
+
+        stbi_image_free(this->imageData);
+        this->imageData = nullptr;
+
+        this->width = image.width;
+        this->height = image.height;
+        this->channels = image.channels;
+        imageData = static_cast<unsigned char*>(malloc(width * height * channels));
+
+        for (int i = 0; i < image.width * image.height * this->channels; i++) {
+            this->imageData[i] = image.imageData[i];
+        }
+
+        return *this;
+    }
 
     /**
      * @brief Destructor for the Image class.
@@ -123,6 +159,9 @@ public:
         if (imageData != nullptr) {
             stbi_image_free(imageData);
         }
+        this->width = 0;
+        this->height = 0;
+        this->imageData = nullptr;
     }
 
     /**
@@ -144,7 +183,7 @@ public:
             std::cerr << "Unsupported File Format" << '\n';
             throw std::invalid_argument("File Extension is not supported, Only .JPG, JPEG, .BMP, .PNG, .TGA are supported");
         }
-        if (imageData != nullptr){
+        if (imageData != nullptr) {
             stbi_image_free(imageData);
         }
 
@@ -222,6 +261,22 @@ public:
         return imageData[(y * width + x) * channels + c];
     }
 
+    const unsigned char& getPixel(int x, int y, int c) const {
+        if (x > width || x < 0) {
+            std::cerr << "Out of width bounds" << '\n';
+            throw std::out_of_range("Out of bounds, Cannot exceed width value");
+        }
+        if (y > height || y < 0) {
+            std::cerr << "Out of height bounds" << '\n';
+            throw std::out_of_range("Out of bounds, Cannot exceed height value");
+        }
+        if (c < 0 || c > 2) {
+            std::cerr << "Out of channels bounds" << '\n';
+            throw std::out_of_range("Out of bounds, You only have 3 channels in RGB");
+        }
+
+        return imageData[(y * width + x) * channels + c];
+    }
     /**
      * @brief Sets the pixel value at the specified position and channel.
      *
@@ -256,6 +311,10 @@ public:
      * @param channel The color channel index (0 for red, 1 for green, 2 for blue).
      * @return Reference to the pixel value.
      */
+    const unsigned char& operator()(int row, int col, int channel) const {
+        return getPixel(row, col, channel);
+    }
+
     unsigned char& operator()(int row, int col, int channel) {
         return getPixel(row, col, channel);
     }
@@ -264,4 +323,5 @@ public:
 
 
 #endif // _IMAGE_CLASS_H
+
 

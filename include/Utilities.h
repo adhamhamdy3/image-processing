@@ -14,6 +14,10 @@ using namespace std;
 
 class Utilities{
 public:
+    template <typename T>
+    static constexpr const T& clamp(const T& value, const T& lower, const T& upper) {
+        return (value < lower) ? lower : (value > upper) ? upper : value;
+    }
     static void display_progress_bar(int current_index, int max_index, string optional_title = "");
     static int get_int(const string& prompt, int l = INT_MIN, int r = INT_MAX);
     static int get_int(const string& prompt, vector<int> value_list);
@@ -24,5 +28,6 @@ public:
 
     static int radial_distance(int i_1, int j_1, int i_2, int j_2, int height, int width);
 };
+
 
 #endif //_UTILITIES_H
