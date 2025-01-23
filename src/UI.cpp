@@ -1,4 +1,16 @@
 #include "UI.h"
+#include <unordered_map>
+
+// Initialize as std::map
+const std::map<int, std::vector<int>> UI::COLOR_MAP = {
+        {1, {0, 0, 0}},
+        {2, {255, 255, 255}},
+        {3, {80, 40, 0}},
+        {4, {255, 0, 0}},
+        {5, {0, 255, 0}},
+        {6, {0, 0, 255}},
+        {7, {255, 255, 0}}
+};
 
 Image UI::load_image(const string &input_filename) {
     Image input_image(input_filename); // Create an image object from the filename
@@ -14,226 +26,190 @@ void UI::save_image(Image &output_image) {
 }
 
 void UI::MainMenu() {
-// Infinite loop for menu-driven program
-    while (true)
-    {
-        choice;
-        // Menu prompt for filter selection
-        filter_prompt = "\nAvailable Filters: \n"
-                               " 1)  Grayscale \n 2)  Black-and-White \n 3)  Invert \n 4)  Merge \n 5)  Flip \n 6)  Rotate \n"
-                               " 7)  Lighten/Darken \n 8)  Crop \n 9)  Frame \n 10) Detect Edges \n 11) Resize \n 12) Blur \n"
-                               " 13) Sunlight \n 14) Oil Painting \n 15) Old TV \n 16) Quit \n\n"
-                               "Choose a filter, or quit (1-16): ";
-        // Get user choice
-        choice = Utilities::get_int(filter_prompt, 1, 16);
+    while (true) {
+        const string filter_prompt = "Available Filters:\n"
+                                     "1) Grayscale\n2) Black-and-White\n3) Invert\n"
+                                     "4) Merge\n5) Flip\n6) Rotate\n"
+                                     "7) Lighten/Darken\n8) Crop\n9) Frame\n"
+                                     "10) Detect Edges\n11) Resize\n12) Blur\n"
+                                     "13) Sunlight\n14) Oil Painting\n15) Old TV\n"
+                                     "16) Quit\n\nChoose a filter (1-16): ";
 
-        if (choice == 16) break; // Quit program if choice is 16
+        const int choice = Utilities::get_int(filter_prompt, 1, 16);
+        if (choice == QUIT) break;
 
-        // Get input image filenames based on choice
-        image_1_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the " +
-                string(choice == 4 ? "first " : "") + "image (must exist in this directory) " + "\n"
-                + "(Available formats: .jpg, .png, .bmp, .tga): ";
-        image_1_filename = Utilities::get_valid_image_filename(image_1_prompt, true);
-        input_image_1 = load_image(image_1_filename);
+        // Common image loading
+        auto load_images = [this](int choice) -> pair<Image, Image> {
+            string prompt = "Enter filename of " +
+                            string(choice == MERGE ? "first " : "") + "image: ";
+            string fname = Utilities::get_valid_image_filename(prompt, true);
+            Image img1 = load_image(fname);
 
-        // Get the second image for merge filter
-        input_image_2 = empty_image_object;
-        if (choice == 4)
-        {
-            string image_2_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the second image "
-                                    "(must exist in this directory) \n(Available formats: .jpg, .png, .bmp, .tga): ";
-            string image_2_filename = Utilities::get_valid_image_filename(image_2_prompt, true);
-            input_image_2 = load_image(image_2_filename);
+            Image img2;
+            if (choice == MERGE) {
+                prompt = "Enter second image filename: ";
+                fname = Utilities::get_valid_image_filename(prompt, true);
+                img2 = load_image(fname);
+            }
+            return {img1, img2};
+        };
+
+        auto [input1, input2] = load_images(choice);
+
+        // Parameters collection
+        FilterParams params;
+        const Image& ref = input1;  // Reference for dimensions
+
+        auto get_merge_params = [&] {
+            params.resize_or_not = Utilities::get_int(
+                    "Merge method (0: Crop, 1: Resize): ", 0, 1);
+        };
+
+        auto get_flip_params = [&] {
+            params.direction = Utilities::get_int(
+                    "Flip direction (1: Horizontal, 2: Vertical): ", 1, 2);
+        };
+
+        auto get_rotate_params = [&] {
+            params.angle = Utilities::get_int(
+                    "Rotation angle (90/180/270): ", {90, 180, 270});
+        };
+
+        auto get_crop_params = [&] {
+            params.vertex_row = Utilities::get_int(
+                    "Start row (1-" + to_string(ref.height) + "): ", 1, ref.height) - 1;
+            params.vertex_col = Utilities::get_int(
+                    "Start column (1-" + to_string(ref.width) + "): ", 1, ref.width) - 1;
+            params.crop_h = Utilities::get_int(
+                    "Height (1-" + to_string(ref.height - params.vertex_row) + "): ", 1);
+            params.crop_w = Utilities::get_int(
+                    "Width (1-" + to_string(ref.width - params.vertex_col) + "): ", 1);
+        };
+
+        const unordered_map<int, function<void()>> param_handlers = {
+                {MERGE, [&] {
+                    params.resize_or_not = Utilities::get_int(
+                            "Merge method (0: Crop, 1: Resize): ", 0, 1);
+                }},
+                {FLIP, [&] {
+                    params.direction = Utilities::get_int(
+                            "Flip direction (1: Horizontal, 2: Vertical): ", 1, 2);
+                }},
+                {ROTATE, [&] {
+                    params.angle = Utilities::get_int(
+                            "Rotation angle (90/180/270): ", vector<int>{90, 180, 270});
+                }},
+                {LIGHTEN, [&] {
+                    params.lighten = Utilities::get_int(
+                            "Lighten (1) or darken (0): ", 0, 1);
+                }},
+                {CROP, [&] {
+                    params.vertex_row = Utilities::get_int(
+                            "Start row (1-" + to_string(input1.height) + "): ",
+                            1, input1.height) - 1;
+                    params.vertex_col = Utilities::get_int(
+                            "Start column (1-" + to_string(input1.width) + "): ",
+                            1, input1.width) - 1;
+                    params.crop_h = Utilities::get_int(
+                            "Height (1-" + to_string(input1.height - params.vertex_row) + "): ", 1);
+                    params.crop_w = Utilities::get_int(
+                            "Width (1-" + to_string(input1.width - params.vertex_col) + "): ", 1);
+                }},
+                {FRAME, [&] {
+                    params.fancy = Utilities::get_int(
+                            "Frame type (0: Simple, 1: Fancy): ", 0, 1);
+                    params.color = Utilities::get_int(
+                            "Color (1-7): \n1) Black 2) White 3) Brown\n"
+                            "4) Red 5) Green 6) Blue 7) Yellow: ", 1, 7);
+                }},
+                {RESIZE, [&] {
+                    params.new_w = Utilities::get_int("Enter new width: ", 1);
+                    params.new_h = Utilities::get_int("Enter new height: ", 1);
+                }},
+                {BLUR, [&] {
+                    params.blur_radius = Utilities::get_int(
+                            "Blur intensity (1-5): ", 1, 5);
+                }},
+                {SUNLIGHT, [&] {
+                    params.sun_intensity = Utilities::get_int(
+                            "Sunlight intensity (1-100): ", 1, 100);
+                }},
+                {OIL, [&] {
+                    params.brush_size = Utilities::get_int(
+                            "Brush size (3-15 odd): ", 3, 15);
+                }},
+                {TV, [&] {
+                    params.noise_intensity = Utilities::get_int(
+                            "Static intensity (1-10): ", 1, 10);
+                }}
+        };
+
+        if (param_handlers.count(choice)) {
+            param_handlers.at(choice)();
         }
 
-        switch (choice)
-        {
-            // Cases for different filters
-            case 4:
-            {
-                // Get user choice for merge filter
-                string filter_4_arg_prompt = "Choose whether to crop and merge the common part of the images"
-                        + string("\n") + "or resize them to the same size (0: Crop, 1: Resize): ";
-                resize_or_not = Utilities::get_int(filter_4_arg_prompt, 0, 1);
-                break;
+        // Output dimensions calculation
+        auto [out_w, out_h] = [&]() -> pair<int, int> {
+            switch (choice) {
+                case MERGE:
+                    return params.resize_or_not ?
+                           make_pair(max(input1.width, input2.width), max(input1.height, input2.height)) :
+                           make_pair(min(input1.width, input2.width), min(input1.height, input2.height));
+                case ROTATE:
+                    return (params.angle % 180) ?
+                           make_pair(input1.height, input1.width) : make_pair(input1.width, input1.height);
+                case CROP:
+                    return {params.crop_w, params.crop_h};
+                case RESIZE:
+                    return {params.new_w, params.new_h};
+                default:
+                    return {input1.width, input1.height};
             }
-            case 5:
-            {
-                // Get user choice for flip filter
-                string filter_5_arg_prompt = "Choose whether to flip the image (1: Horizontally, 2: Vertically): ";
-                horizontal_or_vertical = Utilities::get_int(filter_5_arg_prompt, 1, 2);
-                break;
-            }
-            case 6:
-            {
-                // Get user choice for rotation angle
-                string filter_6_arg_prompt = "Choose a CLOCKWISE rotation angle (90/180/270): ";
-                rotation_angle = Utilities::get_int(filter_6_arg_prompt, vector <int> {90, 180, 270});
-                break;
-            }
-            case 7:
-            {
-                // Get user choice for lighten/darken filter
-                string filter_7_arg_prompt = "Choose whether to lighten or darken the image (1 to lighten, 0 to darken): ";
-                lighten = Utilities::get_int(filter_7_arg_prompt, 0, 1);
-                break;
-            }
-            case 8: {
-                // Get user choice for crop filter
-                string filter_8_row_prompt = "Choose the row number (top-to-bottom) to start cropping at (1-" +
-                        to_string(input_image_1.height) + ") : ";
-                vertex_row_no = Utilities::get_int(filter_8_row_prompt, 1, input_image_1.height) - 1;
+        }();
 
-                string filter_8_column_prompt = "Choose the column number (left-to-right) to start cropping at (1-" +
-                        to_string(input_image_1.width) + ") : ";
-                vertex_col_no = Utilities::get_int(filter_8_column_prompt, 1, input_image_1.width) - 1;
+        // Apply filter
+        Image output(out_w, out_h);
+        cout << "\nApplying filter...\n";
 
-                string filter_8_height_prompt = "Choose the height of the cropped image (1-" +
-                        to_string(input_image_1.height - (vertex_row_no)) + ") : ";
-                crop_height = Utilities::get_int(filter_8_height_prompt, 1, input_image_1.height - (vertex_row_no));
 
-                string filter_8_width_prompt = "Choose the width of the cropped image (1-" +
-                        to_string(input_image_1.width - (vertex_col_no)) + ") : ";
-                crop_width = Utilities::get_int(filter_8_width_prompt, 1, input_image_1.width - (vertex_col_no));
-                break;
-            }
-            case 9:
-            {
-                // Get user choice for frame filter
-                string filter_9_arg_prompt = "Choose whether to apply a simple or fancy frame (0 for simple, 1 for fancy): ";
-                fancy = Utilities::get_int(filter_9_arg_prompt, 0, 1);
-                string filter_9_color_prompt = "Available Colors: \n"
-                                               " 1) Black \n 2) White \n 3) Brown \n 4) Red \n 5) Green \n 6) Blue \n"
-                                               " 7) Yellow \n\nChoose a color (1-7): ";
-                color = Utilities::get_int(filter_9_color_prompt, 1, 7);
-                break;
-            }
-            case 11:
-            {
-                // Get user choice for resize filter
-                string filter_18_width_prompt = "Choose the width of the rescaled image: ";
-                resize_width = Utilities::get_int(filter_18_width_prompt, 1);
-                string filter_18_height_prompt = "Choose the height of the rescaled image: ";
-                resize_height = Utilities::get_int(filter_18_height_prompt, 1);
-                break;
-            }
+        const unordered_map<int, function<void()>> filter_appliers = {
+                {GRAYSCALE, [&]{ Filters::grayscale(input1, output); }},
+                {BW, [&]{ Filters::black_and_white(input1, output); }},
+                {INVERT, [&]{ Filters::invert(input1, output); }},
+                {MERGE, [&]{ Filters::merge(input1, input2, output, params.resize_or_not); }},
+                {FLIP, [&]{ Filters::flip(input1, output, params.direction); }},
+                {ROTATE, [&]{ Filters::rotate(input1, output, params.angle); }},
+                {LIGHTEN, [&]{ Filters::lighten_or_darken(input1, output, params.lighten); }},
+                {CROP, [&]{ Filters::crop(input1, output, params.vertex_row, params.vertex_col); }},
+                {FRAME, [&]{ Filters::frame(input1, output, params.fancy, params.color, UI::COLOR_MAP); }},
+                {EDGES, [&]{ Filters::edges(input1, output); }},
+                {RESIZE, [&]{ Filters::resize(input1, output); }},
+                {SUNLIGHT, [&]{
+                    // Original signature: sunlight(Image, Image)
+                    Filters::sunlight(input1, output);
+                }},
+                {OIL, [&]{
+                    // Original signature: oil_painting(Image, Image)
+                    Filters::oil_painting(input1, output);
+                }},
+                {TV, [&]{
+                    // Original signature: old_tv(Image, Image)
+                    Filters::old_tv(input1, output);
+                }},
+                {BLUR, [&]{
+                    // Maintain original blur logic with calculated values
+                    Filters::blur(input1, output,
+                                  sqrt((input1.height * input1.width))/160, 1);
+                    Filters::blur(output, output,
+                                  sqrt((input1.height * input1.width))/80, 2);
+                }}
+        };
+
+        if (filter_appliers.count(choice)) {
+            filter_appliers.at(choice)();
         }
 
-        switch (choice)
-        {
-            case 4:
-            {
-                // Calculate output dimensions for merge filter
-                if (resize_or_not == 1)
-                {
-                    output_height = max(input_image_1.height, input_image_2.height);
-                    output_width = max(input_image_1.width, input_image_2.width);
-                }
-                else
-                {
-                    output_height = min(input_image_1.height, input_image_2.height);
-                    output_width = min(input_image_1.width, input_image_2.width);
-                }
-                break;
-            }
-            case 6:
-            {
-                // Calculate output dimensions for rotation filter
-                if (rotation_angle == 90 || rotation_angle == 270)
-                {
-                    output_height = input_image_1.width;
-                    output_width = input_image_1.height;
-                }
-                else
-                {
-                    output_height = input_image_1.height;
-                    output_width = input_image_1.width;
-                }
-                break;
-            }
-            case 8:
-                // Set output dimensions for crop filter
-                output_height = crop_height;
-                output_width = crop_width;
-                break;
-            case 11:
-                // Set output dimensions for resize filter
-                output_height = resize_height;
-                output_width = resize_width;
-                break;
-            default:
-                // Default output dimensions
-                output_height = input_image_1.height;
-                output_width = input_image_1.width;
-                break;
-        }
-
-        // Create output image object
-        Image output_image(output_width, output_height);
-
-        // Apply selected filter
-        cout << endl << "Applying the filter.. " << endl;
-        switch (choice)
-        {
-            case 1:
-                Filters::grayscale(input_image_1, output_image);
-                break;
-            case 2:
-                Filters::black_and_white(input_image_1, output_image);
-                break;
-            case 3:
-                Filters::invert(input_image_1, output_image);
-                break;
-            case 4:
-                Filters::merge(input_image_1, input_image_2, output_image, resize_or_not);
-                break;
-            case 5:
-                Filters::flip(input_image_1, output_image, horizontal_or_vertical);
-                break;
-            case 6:
-                Filters::rotate(input_image_1, output_image, rotation_angle);
-                break;
-            case 7:
-                Filters::lighten_or_darken(input_image_1, output_image, lighten);
-                break;
-            case 8:
-                Filters::crop(input_image_1, output_image, vertex_row_no, vertex_col_no);
-                break;
-            case 9:
-                Filters::frame(input_image_1, output_image, fancy, color, color_to_rgb);
-                break;
-            case 10:
-                Filters::edges(input_image_1, output_image);
-                break;
-            case 11:
-                Filters::resize(input_image_1, output_image);
-                break;
-            case 12:
-                Filters::blur(input_image_1, output_image,
-                              sqrt((input_image_1.height * input_image_1.width))/160, 1);
-
-                Filters::blur(output_image, output_image,
-                              sqrt((input_image_1.height * input_image_1.width))/80, 2);
-                break;
-            case 13:
-                Filters::sunlight(input_image_1, output_image);
-                break;
-            case 14:
-                Filters::oil_painting(input_image_1, output_image);
-                break;
-            case 15:
-                Filters::old_tv(input_image_1, output_image);
-                break;
-        }
-        cout << endl;
-
-        // Save the output image
-        save_image(output_image);
-
-        cout << endl << "---------------------------------------------------------------------------------------------------------"
-             << endl << "---------------------------------------------------------------------------------------------------------";
+        save_image(output);
+        cout << "\n" << string(80, '-') << "\n";
     }
-}
-
-UI::UI() {
 }
