@@ -23,7 +23,7 @@ namespace Utilities{
                                       int half_of_outer_width, int thickness, int outer_margin_with_overlap,
                                       int image_height, int image_width);
 
-    static int radial_distance(int i_1, int j_1, int i_2, int j_2, int height, int width);
+    int radial_distance(int i_1, int j_1, int i_2, int j_2, int height, int width);
 };
 
 
