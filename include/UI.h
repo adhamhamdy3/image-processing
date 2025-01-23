@@ -32,6 +32,7 @@ struct FilterParams {
 
 class UI {
 public:
+    // poor menu, I've no power to optimize it
     void MainMenu();
 
 private:

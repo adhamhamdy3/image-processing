@@ -1,13 +1,9 @@
-// Last Modification Date : 10/4/2024
+// Last Modification Date : 23/01/2025
 
 // Author1 : Adham Hamdy
 // Author2 : Eslam Saeed
 // Author3 : Andrew Wafae
 
-// GUI Made by: Adham Hamdy
-
-// System Diagram
-//  
 
 #include "UI.h"
 using namespace std;
