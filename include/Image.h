@@ -3,7 +3,7 @@
  * @brief : This file contains the declaration of the Image class.
  *
  * @authors : Shehab Diab, Youssef Mohamed , Nada Ahmed.
- *                       Dr Mohamed El-Ramely ,
+ *                       Dr Mohamed El-Ramly ,
  * @copyright : FCAI Cairo University
  * @date      : 18/3/2024
  */
@@ -319,8 +319,6 @@ public:
         return getPixel(row, col, channel);
     }
 };
-
-
 
 #endif // _IMAGE_CLASS_H
 

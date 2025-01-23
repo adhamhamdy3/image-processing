@@ -1,5 +1,7 @@
 #include "Utilities.h"
 
+using namespace std;
+
 void Utilities::display_progress_bar(int current_index, int max_index, string optional_title) {
     int percentage = 100 * (current_index + 1) / (max_index + 1); // Calculate percentage
     cout << left << "\r" << optional_title << setfill('#') << setw(percentage / 5) << "" << setfill(' ') << setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar

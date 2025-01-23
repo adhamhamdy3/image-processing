@@ -6,7 +6,8 @@ Image UI::load_image(const string &input_filename) {
 }
 
 void UI::save_image(Image &output_image) {
-    string output_image_prompt = "Please enter the filename (NOT FILEPATH, including extension) to store the edited image \n(Available formats: .jpg, .png, .bmp, .tga): ";
+    string output_image_prompt = "Please enter the filename (NOT FILEPATH, including extension) to store the edited image "
+                                 "\n(Available formats: .jpg, .png, .bmp, .tga): ";
     string output_filename = Utilities::get_valid_image_filename(output_image_prompt); // Get a valid output filename
     cout << endl << "Saving.. " << endl;
     output_image.saveImage(output_filename); // Save the image
@@ -29,7 +30,9 @@ void UI::MainMenu() {
         if (choice == 16) break; // Quit program if choice is 16
 
         // Get input image filenames based on choice
-        image_1_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the " + string(choice == 4 ? "first " : "") + "image (must exist in this directory) " + "\n" + "(Available formats: .jpg, .png, .bmp, .tga): ";
+        image_1_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the " +
+                string(choice == 4 ? "first " : "") + "image (must exist in this directory) " + "\n"
+                + "(Available formats: .jpg, .png, .bmp, .tga): ";
         image_1_filename = Utilities::get_valid_image_filename(image_1_prompt, true);
         input_image_1 = load_image(image_1_filename);
 
@@ -37,7 +40,8 @@ void UI::MainMenu() {
         input_image_2 = empty_image_object;
         if (choice == 4)
         {
-            string image_2_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the second image (must exist in this directory) \n(Available formats: .jpg, .png, .bmp, .tga): ";
+            string image_2_prompt = "Please enter the filename (NOT FILEPATH, including extension) of the second image "
+                                    "(must exist in this directory) \n(Available formats: .jpg, .png, .bmp, .tga): ";
             string image_2_filename = Utilities::get_valid_image_filename(image_2_prompt, true);
             input_image_2 = load_image(image_2_filename);
         }
@@ -48,7 +52,8 @@ void UI::MainMenu() {
             case 4:
             {
                 // Get user choice for merge filter
-                string filter_4_arg_prompt = "Choose whether to crop and merge the common part of the images" + string("\n") + "or resize them to the same size (0: Crop, 1: Resize): ";
+                string filter_4_arg_prompt = "Choose whether to crop and merge the common part of the images"
+                        + string("\n") + "or resize them to the same size (0: Crop, 1: Resize): ";
                 resize_or_not = Utilities::get_int(filter_4_arg_prompt, 0, 1);
                 break;
             }
@@ -75,13 +80,20 @@ void UI::MainMenu() {
             }
             case 8: {
                 // Get user choice for crop filter
-                string filter_8_row_prompt = "Choose the row number (top-to-bottom) to start cropping at (1-" + to_string(input_image_1.height) + ") : ";
+                string filter_8_row_prompt = "Choose the row number (top-to-bottom) to start cropping at (1-" +
+                        to_string(input_image_1.height) + ") : ";
                 vertex_row_no = Utilities::get_int(filter_8_row_prompt, 1, input_image_1.height) - 1;
-                string filter_8_column_prompt = "Choose the column number (left-to-right) to start cropping at (1-" + to_string(input_image_1.width) + ") : ";
+
+                string filter_8_column_prompt = "Choose the column number (left-to-right) to start cropping at (1-" +
+                        to_string(input_image_1.width) + ") : ";
                 vertex_col_no = Utilities::get_int(filter_8_column_prompt, 1, input_image_1.width) - 1;
-                string filter_8_height_prompt = "Choose the height of the cropped image (1-" + to_string(input_image_1.height - (vertex_row_no)) + ") : ";
+
+                string filter_8_height_prompt = "Choose the height of the cropped image (1-" +
+                        to_string(input_image_1.height - (vertex_row_no)) + ") : ";
                 crop_height = Utilities::get_int(filter_8_height_prompt, 1, input_image_1.height - (vertex_row_no));
-                string filter_8_width_prompt = "Choose the width of the cropped image (1-" + to_string(input_image_1.width - (vertex_col_no)) + ") : ";
+
+                string filter_8_width_prompt = "Choose the width of the cropped image (1-" +
+                        to_string(input_image_1.width - (vertex_col_no)) + ") : ";
                 crop_width = Utilities::get_int(filter_8_width_prompt, 1, input_image_1.width - (vertex_col_no));
                 break;
             }
@@ -197,8 +209,11 @@ void UI::MainMenu() {
                 Filters::resize(input_image_1, output_image);
                 break;
             case 12:
-                Filters::blur(input_image_1, output_image, sqrt((input_image_1.height * input_image_1.width))/160, 1);
-                Filters::blur(output_image, output_image, sqrt((input_image_1.height * input_image_1.width))/80, 2);
+                Filters::blur(input_image_1, output_image,
+                              sqrt((input_image_1.height * input_image_1.width))/160, 1);
+
+                Filters::blur(output_image, output_image,
+                              sqrt((input_image_1.height * input_image_1.width))/80, 2);
                 break;
             case 13:
                 Filters::sunlight(input_image_1, output_image);

@@ -1,5 +1,7 @@
 #include "Filters.h"
 
+using namespace std;
+
 void Filters::grayscale(Image &input_image, Image &output_image) {
     for (int i = 0; i < input_image.width; i++) // Loop through each pixel in width
     {
@@ -235,8 +237,9 @@ void Filters::frame(Image &input_image, Image &output_image, const int &fancy, c
                                                         (0.1+2*0.2+0.3+0.025+0.2+0.35+0.3  +  0.1)*corner_size,
                                                         input_image.height, input_image.width);
 
-                int dist_2 = Utilities::radial_distance(equivalent_i, equivalent_j, (0.1+2*0.2+0.3+0.025+0.2+0.35+0.3  +  0.1)
-                *corner_size, (0.1+0.3)*corner_size, input_image.height, input_image.width);
+                int dist_2 = Utilities::radial_distance(equivalent_i, equivalent_j,
+                                                        (0.1+2*0.2+0.3+0.025+0.2+0.35+0.3  +  0.1)*corner_size,
+                                                        (0.1+0.3)*corner_size, input_image.height, input_image.width);
 
                 // Apply frame color based on radial distance and rectangular frames
                 if ( ((0.3-0.08)*corner_size < dist_1 && dist_1 < 0.3*corner_size) ||
@@ -333,7 +336,8 @@ Image &Filters::resize(Image &input_image, Image &output_image) {
         for (int j = 0; j < output_image.height; j++) {
             for (int k = 0; k < 3; k++) {
                 if (round(round_width * double(i)) < input_image.width && round(round_height * double(j)) < input_image.height) {
-                    output_image(i, j, k) = input_image(round(round_width * double(i)), round(round_height * double(j)), k);
+                    output_image(i, j, k) = input_image(round(round_width * double(i)),
+                                                        round(round_height * double(j)), k);
                 }
             }
         }
@@ -344,7 +348,9 @@ Image &Filters::resize(Image &input_image, Image &output_image) {
 
 void Filters::blur(Image &input_image, Image &output_image, const int &blur_radius, const int &call_no) {
 // Precompute blur box sums
-    vector<vector<vector<long long>>> blur_box_sums(input_image.height, vector<vector<long long>>(input_image.width, vector<long long>(3, 0)));
+    vector<vector<vector<long long>>> blur_box_sums(input_image.height,
+                                                    vector<vector<long long>>(input_image.width,
+                                                            vector<long long>(3, 0)));
     for (int i = 0; i < input_image.height; ++i) {
 
         switch (call_no)
@@ -356,7 +362,8 @@ void Filters::blur(Image &input_image, Image &output_image, const int &blur_radi
             }
             case 2:
             {
-                Utilities::display_progress_bar(0.25 * i + 0.5 * input_image.height, (input_image.height - 1));
+                Utilities::display_progress_bar(0.25 * i + 0.5 * input_image.height,
+                                                (input_image.height - 1));
                 break;
             }
         }
@@ -378,12 +385,14 @@ void Filters::blur(Image &input_image, Image &output_image, const int &blur_radi
         {
             case 1:
             {
-                Utilities::display_progress_bar(0.25 * i + 0.25 * input_image.height, (input_image.height - 1));
+                Utilities::display_progress_bar(0.25 * i + 0.25 * input_image.height,
+                                                (input_image.height - 1));
                 break;
             }
             case 2:
             {
-                Utilities::display_progress_bar(float(0.25 * i) + float(0.75 * input_image.height), (input_image.height - 1));
+                Utilities::display_progress_bar(float(0.25 * i) + float(0.75 * input_image.height),
+                                                (input_image.height - 1));
                 break;
             }
         }
@@ -442,7 +451,8 @@ void Filters::oil_painting(Image &input_image, Image &output_image) {
                 {
                     if (m < 0 || n < 0 || m >= input_image.height || n >= input_image.width) continue;
 
-                    int current_intensity = ((input_image(n, m, 0) + input_image(n, m, 1) + input_image(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
+                    int current_intensity = ((input_image(n, m, 0) + input_image(n, m, 1) +
+                            input_image(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
                     intensity_count[current_intensity]++;
                     for (int k = 0; k < 3; k++) color_sums[current_intensity][k] += input_image(n, m, k);
                 }
@@ -451,7 +461,8 @@ void Filters::oil_painting(Image &input_image, Image &output_image) {
             auto max_index = max_element(intensity_count.begin(), intensity_count.end());
 
             // Assign pixel color based on dominant intensity level in neighborhood
-            for (int k = 0; k < 3; k++) output_image(j, i, k) = color_sums[max_index - intensity_count.begin()][k] / *max_index;
+            for (int k = 0; k < 3; k++) output_image(j, i, k) = color_sums[max_index -
+                                                                           intensity_count.begin()][k] / *max_index;
         }
     }
 }

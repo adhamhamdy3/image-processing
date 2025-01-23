@@ -7,7 +7,7 @@
 // GUI Made by: Adham Hamdy
 
 // System Diagram
-// https://bit.ly/3Uj0Uda
+//  
 
 #include "UI.h"
 using namespace std;

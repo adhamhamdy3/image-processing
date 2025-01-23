@@ -3,6 +3,8 @@
 
 #include "Filters.h"
 
+using namespace std;
+
 class UI {
 private:
     int choice;
@@ -23,7 +25,7 @@ private:
     int vertex_row_no, vertex_col_no, crop_width, crop_height;
     int fancy;
     int resize_width, resize_height;
-    map < int, vector <int> > color_to_rgb = { {1, {0, 0, 0}},
+    map<int, vector<int>> color_to_rgb = { {1, {0, 0, 0}},
                                                {2, {255, 255, 255}},
                                                {3, {80, 40, 0}},
                                                {4, {255, 0, 0}},
@@ -38,6 +40,5 @@ public:
     Image load_image(const string& input_filename);
     void save_image(Image& output_image);
 };
-
 
 #endif //_UI_H
