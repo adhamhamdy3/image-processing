@@ -30,21 +30,8 @@ struct FilterParams {
     int noise_intensity = 5;
 };
 
-class UI {
-public:
-    // poor menu, I've no power to optimize it
-    void MainMenu();
-
-private:
-    // Image operations
-    Image load_image(const string& filename);
-    void save_image(Image& image);
-
-    // Color mapping (static as it's read-only)
-    static const std::map<int, std::vector<int>> COLOR_MAP;
-
-    // Filter processing
-    //void process_filter(FilterChoice choice, const Image& input1, const Image& input2, const FilterParams& params);
-};
-
+namespace UI
+{
+    void Run();
+}
 #endif // UI_H

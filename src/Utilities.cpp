@@ -2,14 +2,14 @@
 
 using namespace std;
 
-void Utilities::display_progress_bar(int current_index, int max_index, string optional_title) {
-    int percentage = 100 * (current_index + 1) / (max_index + 1); // Calculate percentage
-    cout << left << "\r" << optional_title << setfill('#') << setw(percentage / 5) << "" << setfill(' ') <<
-    setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar
+void Utilities::displayProgressBar(int currentIndex, int maxIndex, string optionalTitle) {
+    int percentage = 100 * (currentIndex + 1) / (maxIndex + 1); // Calculate percentage
+    cout << left << "\r" << optionalTitle << setfill('#') << setw(percentage / 5) << "" << setfill(' ') <<
+         setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar
     cout.flush(); // Flush output
 }
 
-int Utilities::get_int(const string &prompt, int l, int r) {
+int Utilities::Validations::v_numericalInput(const std::string &prompt, int l, int r) {
     int num; // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
@@ -45,7 +45,7 @@ int Utilities::get_int(const string &prompt, int l, int r) {
     return num; // Return the valid integer
 }
 
-int Utilities::get_int(const string &prompt, vector<int> value_list) {
+int Utilities::Validations::v_numericalInput(const std::string &prompt, std::vector<int> valueList) {
     int num; // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
@@ -65,11 +65,11 @@ int Utilities::get_int(const string &prompt, vector<int> value_list) {
 
             num = (int) num_d; // Convert long double to integer
 
-            if (find(value_list.begin(), value_list.end(), num) == value_list.end()) // Check if input is not in the list
+            if (find(valueList.begin(), valueList.end(), num) == valueList.end()) // Check if input is not in the list
             {
                 cout << "Please enter a number from (" ;
-                for (int i = 0; i < value_list.size() - 1; i++) cout << value_list[i] << ", ";
-                cout << value_list[value_list.size() - 1] << ")" << "\n"; // Display list error message
+                for (int i = 0; i < valueList.size() - 1; i++) cout << valueList[i] << ", ";
+                cout << valueList[valueList.size() - 1] << ")" << "\n"; // Display list error message
                 continue; // Continue to next iteration
             }
             else
@@ -85,7 +85,7 @@ int Utilities::get_int(const string &prompt, vector<int> value_list) {
     return num; // Return the valid integer
 }
 
-string Utilities::get_valid_image_filename(const string &prompt, bool existing) {
+string Utilities::Validations::v_ImgName(const string &prompt, bool existing) {
     freopen ("cerr_output.txt","w",stderr); // Redirect standard error to a file
 
     string filename;
@@ -130,14 +130,13 @@ string Utilities::get_valid_image_filename(const string &prompt, bool existing) 
     return filename; // Return valid filename
 }
 
-bool Utilities::in_rectangular_frame(int i, int j, int center_row, int center_column, int half_of_outer_height,
-                                     int half_of_outer_width, int thickness, int outer_margin_with_overlap,
-                                     int image_height, int image_width) {
-    int allowed_area_height = (2*half_of_outer_height - thickness);
-    int allowed_area_width = (2*half_of_outer_width - thickness);
+bool Utilities::Validations::v_inRectFrame(int i, int j, int centerRow, int centerColumn, int halfOfOuterHeight,
+                              int halfOfOuter_W, int thickness) {
+    int allowed_area_height = (2 * halfOfOuterHeight - thickness);
+    int allowed_area_width = (2 * halfOfOuter_W - thickness);
 
-    if ( ((half_of_outer_height - thickness <= abs(center_row - i) && abs(center_row - i) <= half_of_outer_height) ||
-          (half_of_outer_width - thickness <= abs(center_column - j) && abs(center_column - j) <= half_of_outer_width))
+    if ( ((halfOfOuterHeight - thickness <= abs(centerRow - i) && abs(centerRow - i) <= halfOfOuterHeight) ||
+          (halfOfOuter_W - thickness <= abs(centerColumn - j) && abs(centerColumn - j) <= halfOfOuter_W))
          && ( (i < allowed_area_height) )
          && ( (j < allowed_area_width) )
             )
@@ -147,6 +146,19 @@ bool Utilities::in_rectangular_frame(int i, int j, int center_row, int center_co
     return false; // Point is outside the rectangular frame
 }
 
-int Utilities::radial_distance(int i_1, int j_1, int i_2, int j_2, int height, int width) {
+int Utilities::radialDistance(int i_1, int j_1, int i_2, int j_2) {
     return sqrt(pow((i_1-i_2), 2) + pow((j_1-j_2), 2)); // Calculate and return radial distance
+}
+
+Image Utilities::importIMG(const std::string &fileName) {
+    Image input_image(fileName); // Create an image object from the fileName
+    return input_image; // Return the loaded image
+}
+
+void Utilities::exportIMG(Image & outputImg) {
+    string output_image_prompt = "Please enter the filename (NOT FILEPATH, including extension) to store the edited image "
+                                 "\n(Available formats: .jpg, .png, .bmp, .tga): ";
+    string output_filename = Utilities::Validations::v_ImgName(output_image_prompt); // Get a valid output filename
+    cout << endl << "Saving.. " << endl;
+    outputImg.saveImage(output_filename); // Save the image
 }

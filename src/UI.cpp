@@ -1,31 +1,7 @@
 #include "UI.h"
 #include <unordered_map>
 
-// Initialize as std::map
-const std::map<int, std::vector<int>> UI::COLOR_MAP = {
-        {1, {0, 0, 0}},
-        {2, {255, 255, 255}},
-        {3, {80, 40, 0}},
-        {4, {255, 0, 0}},
-        {5, {0, 255, 0}},
-        {6, {0, 0, 255}},
-        {7, {255, 255, 0}}
-};
-
-Image UI::load_image(const string &input_filename) {
-    Image input_image(input_filename); // Create an image object from the filename
-    return input_image; // Return the loaded image
-}
-
-void UI::save_image(Image &output_image) {
-    string output_image_prompt = "Please enter the filename (NOT FILEPATH, including extension) to store the edited image "
-                                 "\n(Available formats: .jpg, .png, .bmp, .tga): ";
-    string output_filename = Utilities::get_valid_image_filename(output_image_prompt); // Get a valid output filename
-    cout << endl << "Saving.. " << endl;
-    output_image.saveImage(output_filename); // Save the image
-}
-
-void UI::MainMenu() {
+void UI::Run() {
     while (true) {
         const string filter_prompt = "Available Filters:\n"
                                      "1) Grayscale\n2) Black-and-White\n3) Invert\n"
@@ -35,7 +11,7 @@ void UI::MainMenu() {
                                      "13) Sunlight\n14) Oil Painting\n15) Old TV\n"
                                      "16) Quit\n\nChoose a filter (1-16): ";
 
-        const int choice = Utilities::get_int(filter_prompt, 1, 16);
+        const int choice = Utilities::v_numericalInput(filter_prompt, 1, 16);
         if (choice == QUIT) break;
 
         // Common image loading
@@ -61,85 +37,85 @@ void UI::MainMenu() {
         const Image& ref = input1;  // Reference for dimensions
 
         auto get_merge_params = [&] {
-            params.resize_or_not = Utilities::get_int(
+            params.resize_or_not = Utilities::v_numericalInput(
                     "Merge method (0: Crop, 1: Resize): ", 0, 1);
         };
 
         auto get_flip_params = [&] {
-            params.direction = Utilities::get_int(
+            params.direction = Utilities::v_numericalInput(
                     "Flip direction (1: Horizontal, 2: Vertical): ", 1, 2);
         };
 
         auto get_rotate_params = [&] {
-            params.angle = Utilities::get_int(
+            params.angle = Utilities::v_numericalInput(
                     "Rotation angle (90/180/270): ", {90, 180, 270});
         };
 
         auto get_crop_params = [&] {
-            params.vertex_row = Utilities::get_int(
+            params.vertex_row = Utilities::v_numericalInput(
                     "Start row (1-" + to_string(ref.height) + "): ", 1, ref.height) - 1;
-            params.vertex_col = Utilities::get_int(
+            params.vertex_col = Utilities::v_numericalInput(
                     "Start column (1-" + to_string(ref.width) + "): ", 1, ref.width) - 1;
-            params.crop_h = Utilities::get_int(
+            params.crop_h = Utilities::v_numericalInput(
                     "Height (1-" + to_string(ref.height - params.vertex_row) + "): ", 1);
-            params.crop_w = Utilities::get_int(
+            params.crop_w = Utilities::v_numericalInput(
                     "Width (1-" + to_string(ref.width - params.vertex_col) + "): ", 1);
         };
 
         const unordered_map<int, function<void()>> param_handlers = {
                 {MERGE, [&] {
-                    params.resize_or_not = Utilities::get_int(
+                    params.resize_or_not = Utilities::v_numericalInput(
                             "Merge method (0: Crop, 1: Resize): ", 0, 1);
                 }},
                 {FLIP, [&] {
-                    params.direction = Utilities::get_int(
+                    params.direction = Utilities::v_numericalInput(
                             "Flip direction (1: Horizontal, 2: Vertical): ", 1, 2);
                 }},
                 {ROTATE, [&] {
-                    params.angle = Utilities::get_int(
+                    params.angle = Utilities::v_numericalInput(
                             "Rotation angle (90/180/270): ", vector<int>{90, 180, 270});
                 }},
                 {LIGHTEN, [&] {
-                    params.lighten = Utilities::get_int(
+                    params.lighten = Utilities::v_numericalInput(
                             "Lighten (1) or darken (0): ", 0, 1);
                 }},
                 {CROP, [&] {
-                    params.vertex_row = Utilities::get_int(
+                    params.vertex_row = Utilities::v_numericalInput(
                             "Start row (1-" + to_string(input1.height) + "): ",
                             1, input1.height) - 1;
-                    params.vertex_col = Utilities::get_int(
+                    params.vertex_col = Utilities::v_numericalInput(
                             "Start column (1-" + to_string(input1.width) + "): ",
                             1, input1.width) - 1;
-                    params.crop_h = Utilities::get_int(
+                    params.crop_h = Utilities::v_numericalInput(
                             "Height (1-" + to_string(input1.height - params.vertex_row) + "): ", 1);
-                    params.crop_w = Utilities::get_int(
+                    params.crop_w = Utilities::v_numericalInput(
                             "Width (1-" + to_string(input1.width - params.vertex_col) + "): ", 1);
                 }},
                 {FRAME, [&] {
-                    params.fancy = Utilities::get_int(
+                    params.fancy = Utilities::v_numericalInput(
                             "Frame type (0: Simple, 1: Fancy): ", 0, 1);
-                    params.color = Utilities::get_int(
+                    params.color = Utilities::v_numericalInput(
                             "Color (1-7): \n1) Black 2) White 3) Brown\n"
                             "4) Red 5) Green 6) Blue 7) Yellow: ", 1, 7);
                 }},
                 {RESIZE, [&] {
-                    params.new_w = Utilities::get_int("Enter new width: ", 1);
-                    params.new_h = Utilities::get_int("Enter new height: ", 1);
+                    params.new_w = Utilities::v_numericalInput("Enter new width: ", 1);
+                    params.new_h = Utilities::v_numericalInput("Enter new height: ", 1);
                 }},
                 {BLUR, [&] {
-                    params.blur_radius = Utilities::get_int(
+                    params.blur_radius = Utilities::v_numericalInput(
                             "Blur intensity (1-5): ", 1, 5);
                 }},
                 {SUNLIGHT, [&] {
-                    params.sun_intensity = Utilities::get_int(
+                    params.sun_intensity = Utilities::v_numericalInput(
                             "Sunlight intensity (1-100): ", 1, 100);
                 }},
                 {OIL, [&] {
-                    params.brush_size = Utilities::get_int(
+                    params.brush_size = Utilities::v_numericalInput(
                             "Brush size (3-15 odd): ", 3, 15);
                 }},
                 {TV, [&] {
-                    params.noise_intensity = Utilities::get_int(
+                    params.noise_intensity = Utilities::v_numericalInput(
                             "Static intensity (1-10): ", 1, 10);
                 }}
         };
@@ -173,13 +149,13 @@ void UI::MainMenu() {
 
 
         const unordered_map<int, function<void()>> filter_appliers = {
-                {GRAYSCALE, [&]{ Filters::grayscale(input1, output); }},
-                {BW, [&]{ Filters::black_and_white(input1, output); }},
+                {GRAYSCALE, [&]{ Filters::grayScale(input1, output); }},
+                {BW, [&]{ Filters::Black_White(input1, output); }},
                 {INVERT, [&]{ Filters::invert(input1, output); }},
                 {MERGE, [&]{ Filters::merge(input1, input2, output, params.resize_or_not); }},
                 {FLIP, [&]{ Filters::flip(input1, output, params.direction); }},
                 {ROTATE, [&]{ Filters::rotate(input1, output, params.angle); }},
-                {LIGHTEN, [&]{ Filters::lighten_or_darken(input1, output, params.lighten); }},
+                {LIGHTEN, [&]{ Filters::exposure(input1, output, params.lighten); }},
                 {CROP, [&]{ Filters::crop(input1, output, params.vertex_row, params.vertex_col); }},
                 {FRAME, [&]{ Filters::frame(input1, output, params.fancy, params.color, UI::COLOR_MAP); }},
                 {EDGES, [&]{ Filters::edges(input1, output); }},
@@ -189,12 +165,12 @@ void UI::MainMenu() {
                     Filters::sunlight(input1, output);
                 }},
                 {OIL, [&]{
-                    // Original signature: oil_painting(Image, Image)
-                    Filters::oil_painting(input1, output);
+                    // Original signature: oilPainting(Image, Image)
+                    Filters::oilPainting(input1, output);
                 }},
                 {TV, [&]{
-                    // Original signature: old_tv(Image, Image)
-                    Filters::old_tv(input1, output);
+                    // Original signature: oldTV(Image, Image)
+                    Filters::oldTV(input1, output);
                 }},
                 {BLUR, [&]{
                     // Maintain original blur logic with calculated values

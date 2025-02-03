@@ -4,24 +4,37 @@
 #include "Utilities.h"
 #include "Image.h"
 
-namespace Filters {
-    void grayscale(Image& input_image, Image& output_image);
-    void black_and_white(Image& input_image, Image& output_image);
-    void invert(Image& input_image, Image& output_image);
-    void merge(Image& input_image_1, Image& input_image_2, Image& output_image, const int& resize_or_not);
-    void flip(Image& input_image, Image& output_image, const int& horizontal_or_vertical);
-    void rotate(Image& input_image, Image& output_image, const int& rotation_angle);
-    void lighten_or_darken(Image& input_image, Image& output_image, const int& lighten);
-    void crop(Image& input_image, Image& output_image, const int& vertex_row_no, const int& vertex_col_no);
-    void frame(Image& input_image, Image& output_image, const int& fancy, const int& color, const std::map <int,
+enum class H_V : uint8_t
+{
+    H = 1, V
+};
+
+enum class ANGLE : int
+{
+    RIGHT = 90, STRAIGHT = 180, OBTUSE = 270
+};
+
+typedef uint8_t U8;
+
+namespace Filters
+{
+    void grayScale(Image& inputImage, Image& outputImage);
+    void Black_White(Image & inputImage, Image & outputImage);
+    void invert(Image& inputImage, Image& outputImage);
+    void merge(Image& inputImage1, Image& inputImage2, Image& outputImage, U8 resize_or_not);
+    void flip(Image& inputImage, Image& outputImage, U8 horizontal_or_vertical);
+    void rotate(Image& inputImage, Image& outputImage, int rotationAngle);
+    void exposure(Image & inputImage, Image & outputImage, bool lighten);
+    void crop(Image& inputImage, Image& outputImage, const int& vertexRow_Num, const int& vertexCol_Num);
+    void frame(Image& inputImage, Image& outputImage, const int& fancy, const int& color, const std::map <int,
                std::vector <int>>& color_to_rgb);
 
-    void edges(Image& input_image, Image& output_image);
-    Image& resize(Image& input_image, Image& output_image);
-    void blur(Image& input_image, Image& output_image, const int& blur_radius, const int& call_no);
-    void sunlight(Image& input_image, Image& output_image);
-    void oil_painting(Image& input_image, Image& output_image);
-    void old_tv(Image& input_image, Image& output_image);
+    void edges(Image& inputImage, Image& outputImage);
+    Image& resize(Image& inputImage, Image& outputImage);
+    void blur(Image& inputImage, Image& outputImage, const int& blurRadius, const int& call_Num);
+    void sunlight(Image& inputImage, Image& outputImage);
+    void oilPainting(Image & inputImage, Image & outputImage);
+    void oldTV(Image & inputImage, Image & outputImage);
 };
 
 

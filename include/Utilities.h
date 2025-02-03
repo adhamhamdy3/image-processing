@@ -1,6 +1,8 @@
 #ifndef _UTILITIES_H
 #define _UTILITIES_H
 
+// v_<function> --> validation
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -10,21 +12,26 @@
 #include <random>
 #include "Image.h"
 
-namespace Utilities{
-    template <typename T>
-    static constexpr const T& clamp(const T& value, const T& lower, const T& upper) {
-        return (value < lower) ? lower : (value > upper) ? upper : value;
+namespace Utilities
+{
+    namespace Validations
+    {
+        template <typename T>
+        static constexpr const T& clamp(const T& value, const T& lower, const T& upper) {
+            return (value < lower) ? lower : (value > upper) ? upper : value;
+        }
+        int v_numericalInput(const std::string& prompt, int l = INT_MIN, int r = INT_MAX);
+        int v_numericalInput(const std::string &prompt, std::vector<int> valueList);
+        std::string v_ImgName(const std::string& prompt, bool existing = false);
+        bool v_inRectFrame (int i, int j, int centerRow, int centerColumn, int halfOfOuter_H,
+                            int halfOfOuter_W, int thickness);
     }
-    void display_progress_bar(int current_index, int max_index, std::string optional_title = "");
-    int get_int(const std::string& prompt, int l = INT_MIN, int r = INT_MAX);
-    int get_int(const std::string& prompt, std::vector<int> value_list);
-    std::string get_valid_image_filename(const std::string& prompt, bool existing = false);
-    bool in_rectangular_frame (int i, int j, int center_row, int center_column, int half_of_outer_height,
-                                      int half_of_outer_width, int thickness, int outer_margin_with_overlap,
-                                      int image_height, int image_width);
 
-    int radial_distance(int i_1, int j_1, int i_2, int j_2, int height, int width);
+    void displayProgressBar(int currentIndex, int maxIndex, std::string optionalTitle = "");
+    int radialDistance(int i_1, int j_1, int i_2, int j_2);
+
+    Image importIMG(const std::string &fileName);
+    void exportIMG(Image & outputImg);
 };
-
 
 #endif //_UTILITIES_H

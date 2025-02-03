@@ -3867,7 +3867,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
    int n, decode_n, is_rgb;
    z->s->img_n = 0; // make stbi__cleanup_jpeg safe
 
-   // validate req_comp
+   // v_ImgName req_comp
    if (req_comp < 0 || req_comp > 4) return stbi__errpuc("bad req_comp", "Internal error");
 
    // load a jpeg image from whichever source, but leave in YCbCr format
@@ -4788,7 +4788,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
 
       // expand decoded bits in cur to dest, also adding an extra alpha channel if desired
       if (depth < 8) {
-         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayscale values to 0..255 range
+         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayScale values to 0..255 range
          stbi_uc *in = cur;
          stbi_uc *out = dest;
          stbi_uc inb = 0;
