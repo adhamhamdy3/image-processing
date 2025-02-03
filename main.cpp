@@ -10,8 +10,7 @@ using namespace std;
 
 int main()
 {
-    UI start;
-    start.MainMenu();
+    UI::Run();
     return 0;
 }
 

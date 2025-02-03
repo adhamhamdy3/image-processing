@@ -9,7 +9,7 @@ void Filters::grayScale(Image &inputImage, Image &outputImage) {
 
         for (int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
         {
-            U8 avg = 0; // Initialize average value for grayScale calculation
+            U16 avg = 0; // Initialize average value for grayScale calculation
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
                 avg += inputImage(i, j, k); // Sum RGB values
@@ -31,7 +31,7 @@ void Filters::Black_White(Image &inputImage, Image &outputImage) {
 
         for (int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
         {
-            U8 avg = 0; // Initialize average value for black and white calculation
+            U16 avg = 0; // Initialize average value for black and white calculation
 
             for (U8 k = 0; k < inputImage.channels; k++) // Loop through channels
             {
@@ -76,7 +76,7 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
             {
                 for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
-                    U8 avg = (inputImage1(i, j, k) + inputImage2(i, j, k)) / 2; // Calculate average of corresponding pixels
+                    U16 avg = (inputImage1(i, j, k) + inputImage2(i, j, k)) / 2; // Calculate average of corresponding pixels
                     outputImage(i, j, k) = avg; // Assign average value to output image
                 }
             }
@@ -103,7 +103,7 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
             {
                 for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
-                    U8 avg = (image_1_resized(i, j, k) + image_2_resized(i, j, k)) / 2; // Calculate average of corresponding pixels
+                    U16 avg = (image_1_resized(i, j, k) + image_2_resized(i, j, k)) / 2; // Calculate average of corresponding pixels
                     outputImage(i, j, k) = avg; // Assign average value to output image
                 }
             }
@@ -121,7 +121,7 @@ void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_verti
                 Utilities::displayProgressBar((inputImage.width - 1) - i, inputImage.width - 1); // Display progress bar
                 for(int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
                 {
-                    for (int k = 0; k < 3; k++) // Loop through RGB channels
+                    for (U8 k = 0; k < 3; k++) // Loop through RGB channels
                     {
                         outputImage(inputImage.width - 1 - i, j, k) = inputImage(i, j, k); // Perform horizontal flip
                     }
@@ -135,7 +135,7 @@ void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_verti
                 Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
                 for(int j = inputImage.height - 1; j >= 0; j--) // Loop through each pixel in reversed height
                 {
-                    for(int k = 0; k < 3; k++) // Loop through RGB channels
+                    for(U8 k = 0; k < 3; k++) // Loop through RGB channels
                     {
                         outputImage(i, inputImage.height - 1 - j, k) = inputImage(i, j, k); // Perform vertical flip
                     }
@@ -152,7 +152,7 @@ void Filters::rotate(Image &inputImage, Image &outputImage, int rotationAngle) {
         Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
         for (int j = 0; j < inputImage.width; j++) // Loop through each pixel in width
         {
-            for (int k = 0; k < 3; k++) // Loop through RGB channels
+            for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
                 switch (rAngle) // Perform rotation based on specified angle
                 {
@@ -179,7 +179,7 @@ void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten) {
             Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
             for (int j = 0; j < inputImage.height; ++j) // Loop through each pixel in height
             {
-                for (int k = 0; k < 3; ++k) // Loop through RGB channels
+                for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
                     int light = inputImage(i, j, k) * 0.5; // Calculate lightening factor
                     outputImage (i, j, k) = min(inputImage(i, j, k) + light, 255); // Apply lightening effect
@@ -194,7 +194,7 @@ void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten) {
             Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
             for (int j = 0; j < inputImage.height; ++j) // Loop through each pixel in height
             {
-                for (int k = 0; k < 3; ++k) // Loop through RGB channels
+                for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
                     int dark = inputImage(i, j, k) * 0.5; // Calculate darkening factor
                     outputImage (i, j, k) = min(inputImage(i, j, k) - dark, 255); // Apply darkening effect
@@ -248,19 +248,19 @@ void Filters::frame(Image &inputImage, Image &outputImage, const int &fancy, con
                 if ( ((0.3-0.08)*corner_size < dist_1 && dist_1 < 0.3*corner_size) ||
                      ((0.3-0.08)*corner_size < dist_2 && dist_2 < 0.3*corner_size) )
                 {
-                    for (int k = 0; k < 3; k++) outputImage(j, i, k) = color_to_rgb.at(color)[k];
+                    for (U8 k = 0; k < 3; k++) outputImage(j, i, k) = color_to_rgb.at(color)[k];
                 }
                 else if (Utilities::Validations::v_inRectFrame(equivalent_i, equivalent_j,
                                                   inputImage.height / 2, inputImage.width / 2,
                                                   inputImage.height / 2, inputImage.width / 2,
                                                   0.1 * corner_size))
                 {
-                    for (int k = 0; k < 3; k++) outputImage(j, i, k) = color_to_rgb.at(color)[k];
+                    for (U8 k = 0; k < 3; k++) outputImage(j, i, k) = color_to_rgb.at(color)[k];
                 }
                     // Add more conditions for other rectangular frames or custom designs if needed
                 else
                 {
-                    for (int k = 0; k < 3; k++) outputImage(j, i, k) = inputImage(j, i, k); // Copy original pixel if not in frame
+                    for (U8 k = 0; k < 3; k++) outputImage(j, i, k) = inputImage(j, i, k); // Copy original pixel if not in frame
                 }
             }
         }
@@ -277,14 +277,14 @@ void Filters::frame(Image &inputImage, Image &outputImage, const int &fancy, con
                 if ((abs(inputImage.height / 2 - i) > inputImage.height / 2 - 0.3 * corner_size) ||
                     (abs(inputImage.width / 2 - j) > inputImage.width / 2 - 0.3 * corner_size)   )
                 {
-                    for (int k = 0; k < 3; k++) // Apply frame color to pixel
+                    for (U8 k = 0; k < 3; k++) // Apply frame color to pixel
                     {
                         outputImage(j, i, k) = color_to_rgb.at(color)[k];
                     }
                 }
                 else // Copy original pixel if within frame boundary
                 {
-                    for (int k = 0; k < 3; k++)
+                    for (U8 k = 0; k < 3; k++)
                     {
                         outputImage(j, i, k) = inputImage(j, i, k);
                     }
@@ -490,14 +490,14 @@ void Filters::oldTV(Image &inputImage, Image &outputImage) {
             // Apply noise with different intensities based on line thickness
             if ((i % total_thickness) < total_thickness * 0.65)
             {
-                for (int k = 0; k < inputImage.channels; k++) {
+                for (U8 k = 0; k < inputImage.channels; k++) {
                     double pixel_value = inputImage(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);  // Add noise and adjust blue channel
                     outputImage(j, i, k) = Utilities::Validations::clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
                 }
             }
             else
             {
-                for (int k = 0; k < inputImage.channels; k++)
+                for (U8 k = 0; k < inputImage.channels; k++)
                 {
                     double pixel_value = inputImage(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);  // Add noise with different intensity
                     outputImage(j, i, k) = Utilities::Validations::clamp(pixel_value, 0.0, 255.0);  // Clamp pixel value within valid range
