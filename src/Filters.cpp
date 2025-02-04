@@ -219,7 +219,7 @@ void Filters::crop(Image &inputImage, Image &outputImage, const int &vertexRow_N
 }
 
 void Filters::frame(Image &inputImage, Image &outputImage, const int &fancy, const int &color,
-                    const map<int, vector<int>> &color_to_rgb) {
+                    const unordered_map<int, vector<int>> &color_to_rgb) {
     int corner_size = min(inputImage.height, inputImage.width) / 20; // Calculate corner size for the frame
 
     if (fancy) // Apply fancy frame

@@ -3,6 +3,7 @@
 
 #include "Utilities.h"
 #include "Image.h"
+#include <unordered_map>
 
 enum class H_V : uint8_t
 {
@@ -14,9 +15,6 @@ enum class ANGLE : int
     RIGHT = 90, STRAIGHT = 180, OBTUSE = 270
 };
 
-typedef uint16_t U16;
-typedef uint8_t U8;
-
 namespace Filters
 {
     void grayScale(Image &inputImage, Image &outputImage);
@@ -27,7 +25,7 @@ namespace Filters
     void rotate(Image &inputImage, Image &outputImage, int rotationAngle);
     void exposure(Image &inputImage, Image &outputImage, bool lighten);
     void crop(Image &inputImage, Image &outputImage, const int& vertexRow_Num, const int& vertexCol_Num);
-    void frame(Image &inputImage, Image &outputImage, const int& fancy, const int& color, const std::map <int,
+    void frame(Image &inputImage, Image &outputImage, const int& fancy, const int& color, const std::unordered_map <int,
                std::vector <int>>& color_to_rgb);
 
     void edges(Image &inputImage, Image &outputImage);

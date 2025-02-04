@@ -12,6 +12,9 @@
 #include <random>
 #include "Image.h"
 
+typedef uint16_t U16;
+typedef uint8_t U8;
+
 namespace Utilities
 {
     namespace Validations
@@ -32,6 +35,6 @@ namespace Utilities
 
     Image importIMG(const std::string &fileName);
     void exportIMG(Image & outputImg);
-};
+}
 
 #endif //_UTILITIES_H

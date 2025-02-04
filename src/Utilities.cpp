@@ -3,14 +3,14 @@
 using namespace std;
 
 void Utilities::displayProgressBar(int currentIndex, int maxIndex, string optionalTitle) {
-    int percentage = 100 * (currentIndex + 1) / (maxIndex + 1); // Calculate percentage
+    U8 percentage = 100 * (currentIndex + 1) / (maxIndex + 1); // Calculate percentage
     cout << left << "\r" << optionalTitle << setfill('#') << setw(percentage / 5) << "" << setfill(' ') <<
          setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar
     cout.flush(); // Flush output
 }
 
 int Utilities::Validations::v_numericalInput(const std::string &prompt, int l, int r) {
-    int num; // Variable to store the integer
+    U8 num; // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
         try
@@ -46,7 +46,7 @@ int Utilities::Validations::v_numericalInput(const std::string &prompt, int l, i
 }
 
 int Utilities::Validations::v_numericalInput(const std::string &prompt, std::vector<int> valueList) {
-    int num; // Variable to store the integer
+    U8 num; // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
         try
