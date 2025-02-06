@@ -12,9 +12,6 @@
 #include <random>
 #include "Image.h"
 
-typedef uint16_t U16;
-typedef uint8_t U8;
-
 namespace Utilities
 {
     namespace Validations

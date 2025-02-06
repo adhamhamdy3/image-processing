@@ -199,3 +199,23 @@ const unsigned char& Image::operator()(int row, int col, int channel) const {
 unsigned char& Image::operator()(int row, int col, int channel) {
     return getPixel(row, col, channel);
 }
+
+bool Image::operator==(const Image &other) const {
+    bool eqDimensions = (this->width != other.width || this->height != other.height);
+    if (!eqDimensions)
+        return false;
+    for (size_t i = 0; i < this->width; ++i) {
+        for (int j = 0; j < this->height; ++j) {
+            U16 avg1 = 0, avg2 = 0;
+            for (U8 k = 0; k < 3; ++k) {
+                avg1 += this->getPixel(i, j, k);
+                avg2 += other.getPixel(i, j, k);
+            }
+            avg1 /= 3;
+            avg2 /= 3;
+
+            if (avg1 != avg2) return false;
+        }
+    }
+    return true;
+}

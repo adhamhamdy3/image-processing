@@ -13,12 +13,12 @@
 #ifndef _IMAGE_H
 #define _IMAGE_H
 
-
-
-
 #include <iostream>
 #include <exception>
+#include <cstdint>
 
+typedef uint16_t U16;
+typedef uint8_t U8;
 
 /**
  * @class Image
@@ -145,6 +145,8 @@ public:
     const unsigned char& operator()(int row, int col, int channel) const;
 
     unsigned char& operator()(int row, int col, int channel);
+
+    bool operator==(const Image& other) const;
 };
 
 #endif // _IMAGE_H
