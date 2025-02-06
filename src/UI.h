@@ -2,6 +2,7 @@
 #define UI_H
 
 #include "Filters.h"
+#include "Photo.h"
 #include <unordered_map>
 
 namespace UI {
