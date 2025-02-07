@@ -24,13 +24,13 @@ namespace Filters
     void flip(Image &inputImage, Image &outputImage, U8 horizontal_or_vertical);
     void rotate(Image &inputImage, Image &outputImage, int rotationAngle);
     void exposure(Image &inputImage, Image &outputImage, bool lighten);
-    void crop(Image &inputImage, Image &outputImage, const int& vertexRow_Num, const int& vertexCol_Num);
-    void frame(Image &inputImage, Image &outputImage, const int& fancy, const int& color, const std::unordered_map <int,
+    void crop(Image &inputImage, Image &outputImage, int vertexRow_Num, int vertexCol_Num);
+    void frame(Image &inputImage, Image &outputImage, int fancy, int color, const std::unordered_map <int,
                std::vector <int>>& color_to_rgb);
 
     void edges(Image &inputImage, Image &outputImage);
     Image& resize(Image &inputImage, Image &outputImage);
-    void blur(Image &inputImage, Image &outputImage, const int& blurRadius, const int& call_Num);
+    void blur(Image &inputImage, Image &outputImage, int blurRadius, int call_Num);
     void sunlight(Image &inputImage, Image &outputImage);
     void oilPainting(Image &inputImage, Image &outputImage);
     void oldTV(Image &inputImage, Image &outputImage);

@@ -5,19 +5,49 @@
 #include "Photo.h"
 #include <unordered_map>
 
-namespace UI {
-    enum class FilterOption {
+namespace FilterConstants
+{
+    extern const std::unordered_map<int, std::vector<int>> FRAME_COLORS;
+    extern const std::vector<std::pair<int, int>> ROTATION_ANGLES;
+    extern const std::string FILTER_MENU;
+}
+
+namespace PromptHandlers
+{
+    namespace ConstantPrompts
+    {
+        std::string image_1_prompt(U8 choice);
+        extern const std::string img2_Prompt;
+        extern const std::string mergeFilterArg;
+        extern const std::string flipFilterArg;
+        extern const std::string rotateFilterArg;
+        extern const std::string exposureFilterArg;
+
+        // Crop
+        std::string cropFilterRow_Arg(size_t);
+        std::string cropFilterCol_Arg(size_t);
+        std::string cropFilterHeight_Arg(size_t, size_t);
+        std::string cropFilterWidth_Arg(size_t, size_t);
+    }
+    std::string image_1_filename{};
+    std::string image_2_filename{};
+}
+
+class UI
+{
+public:
+    enum class FilterOption
+    {
         GrayScale = 1, BlackWhite, Invert, Merge, Flip, Rotate,
         Exposure, Crop, Frame, Edges, Resize, Blur, Sunlight,
         OilPainting, OldTV, Quit = 16
     };
 
-    namespace FilterConstants {
-        const std::unordered_map<int, std::vector<int>> FRAME_COLORS;
-        const std::vector<std::pair<int, int>> ROTATION_ANGLES;
-        const std::string FILTER_MENU;
-    };
-
     void Run();
-}
+    Photo *inputPhoto1{nullptr};
+    Photo *inputPhoto2{nullptr};
+    Photo *outputPhoto{nullptr};
+
+    ~UI();
+};
 #endif

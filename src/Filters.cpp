@@ -2,7 +2,8 @@
 
 using namespace std;
 
-void Filters::grayScale(Image &inputImage, Image &outputImage) {
+void Filters::grayScale(Image &inputImage, Image &outputImage)
+{
     for (int i = 0; i < inputImage.width; i++) // Loop through each pixel in width
     {
         Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
@@ -24,7 +25,8 @@ void Filters::grayScale(Image &inputImage, Image &outputImage) {
     }
 }
 
-void Filters::Black_White(Image &inputImage, Image &outputImage) {
+void Filters::Black_White(Image &inputImage, Image &outputImage)
+{
     for(int i = 0; i < inputImage.width; i++) // Loop through each pixel in width
     {
         Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
@@ -51,7 +53,8 @@ void Filters::Black_White(Image &inputImage, Image &outputImage) {
     }
 }
 
-void Filters::invert(Image &inputImage, Image &outputImage) {
+void Filters::invert(Image &inputImage, Image &outputImage)
+{
     for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
     {
         Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
@@ -66,7 +69,8 @@ void Filters::invert(Image &inputImage, Image &outputImage) {
     }
 }
 
-void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not) {
+void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
+{
     if (resize_or_not == 0) // If resizing is not required
     {
         for (int i = 0; i < outputImage.width; ++i) // Loop through each pixel in width
@@ -111,7 +115,8 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
     }
 }
 
-void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_vertical) {
+void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_vertical)
+{
     H_V choice = (H_V) horizontal_or_vertical;
     switch(choice)
     {
@@ -145,7 +150,8 @@ void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_verti
     }
 }
 
-void Filters::rotate(Image &inputImage, Image &outputImage, int rotationAngle) {
+void Filters::rotate(Image &inputImage, Image &outputImage, int rotationAngle)
+{
     ANGLE rAngle = (ANGLE) rotationAngle;
     for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
     {
@@ -171,7 +177,8 @@ void Filters::rotate(Image &inputImage, Image &outputImage, int rotationAngle) {
     }
 }
 
-void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten) {
+void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten)
+{
     if (lighten) // Lighten image
     {
         for (int i = 0; i < inputImage.width; ++i) // Loop through each pixel in width
@@ -204,7 +211,8 @@ void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten) {
     }
 }
 
-void Filters::crop(Image &inputImage, Image &outputImage, const int &vertexRow_Num, const int &vertexCol_Num) {
+void Filters::crop(Image &inputImage, Image &outputImage, int vertexRow_Num, int vertexCol_Num)
+{
     for (int i = 0; i < outputImage.height; i++) // Loop through each pixel in output image height
     {
         Utilities::displayProgressBar(i, outputImage.height - 1); // Display progress bar
@@ -218,7 +226,7 @@ void Filters::crop(Image &inputImage, Image &outputImage, const int &vertexRow_N
     }
 }
 
-void Filters::frame(Image &inputImage, Image &outputImage, const int &fancy, const int &color,
+void Filters::frame(Image &inputImage, Image &outputImage, int fancy, int color,
                     const unordered_map<int, vector<int>> &color_to_rgb) {
     int corner_size = min(inputImage.height, inputImage.width) / 20; // Calculate corner size for the frame
 
@@ -295,7 +303,8 @@ void Filters::frame(Image &inputImage, Image &outputImage, const int &fancy, con
 
 }
 
-void Filters::edges(Image &inputImage, Image &outputImage) {
+void Filters::edges(Image &inputImage, Image &outputImage)
+{
     int sobelX[3][3] = {{-1, 0, 1},
                         {-2, 0, 2},
                         {-1, 0, 1}};
@@ -304,15 +313,19 @@ void Filters::edges(Image &inputImage, Image &outputImage) {
                         {0, 0, 0},
                         {1, 2, 1}};
 
-    for (int y = 1; y+1 < inputImage.height; ++y) { // Loop through each pixel in height
+    for (int y = 1; y+1 < inputImage.height; ++y)
+    { // Loop through each pixel in height
         Utilities::displayProgressBar(y, inputImage.height - 2); // Display progress bar
 
-        for (int x = 1; x+1 < inputImage.width; ++x) { // Loop through each pixel in width
+        for (int x = 1; x+1 < inputImage.width; ++x)
+        { // Loop through each pixel in width
             float gradientX = 0.0;
             float gradientY = 0.0;
 
-            for (int j = -1; j <= 1; ++j) {
-                for (int i = -1; i <= 1; ++i) {
+            for (int j = -1; j <= 1; ++j)
+            {
+                for (int i = -1; i <= 1; ++i)
+                {
                     // Compute gradients using Sobel operator
                     gradientX += inputImage(x + i, y + j, 0) * sobelX[j + 1][i + 1];
                     gradientY += inputImage(x + i, y + j, 0) * sobelY[j + 1][i + 1];
@@ -329,14 +342,18 @@ void Filters::edges(Image &inputImage, Image &outputImage) {
     }
 }
 
-Image &Filters::resize(Image &inputImage, Image &outputImage) {
+Image &Filters::resize(Image &inputImage, Image &outputImage)
+{
     double round_height = double(inputImage.height) / double(outputImage.height);
     double round_width = double(inputImage.width) / double(outputImage.width);
 
-    for (int i = 0; i < outputImage.width; i++) {
+    for (int i = 0; i < outputImage.width; i++)
+    {
         Utilities::displayProgressBar(i, outputImage.width - 1);
-        for (int j = 0; j < outputImage.height; j++) {
-            for (U8 k = 0; k < 3; k++) {
+        for (int j = 0; j < outputImage.height; j++)
+        {
+            for (U8 k = 0; k < 3; k++)
+            {
                 if (round(round_width * double(i)) < inputImage.width && round(round_height * double(j)) < inputImage.height) {
                     outputImage(i, j, k) = inputImage(round(round_width * double(i)),
                                                       round(round_height * double(j)), k);
@@ -348,12 +365,14 @@ Image &Filters::resize(Image &inputImage, Image &outputImage) {
     return outputImage;
 }
 
-void Filters::blur(Image &inputImage, Image &outputImage, const int &blurRadius, const int &call_Num) {
+void Filters::blur(Image &inputImage, Image &outputImage, int blurRadius, int call_Num)
+{
 // Precompute blur box sums
     vector<vector<vector<long long>>> blur_box_sums(inputImage.height,
                                                     vector<vector<long long>>(inputImage.width,
                                                                               vector<long long>(3, 0)));
-    for (int i = 0; i < inputImage.height; ++i) {
+    for (int i = 0; i < inputImage.height; ++i)
+    {
 
         switch (call_Num)
         {
@@ -370,8 +389,10 @@ void Filters::blur(Image &inputImage, Image &outputImage, const int &blurRadius,
             }
         }
 
-        for (int j = 0; j < inputImage.width; ++j) {
-            for (U8 k = 0; k < 3; ++k) {
+        for (int j = 0; j < inputImage.width; ++j)
+        {
+            for (U8 k = 0; k < 3; ++k)
+            {
                 blur_box_sums[i][j][k] = inputImage(j, i, k);
                 if (i > 0) blur_box_sums[i][j][k] += blur_box_sums[i - 1][j][k];
                 if (j > 0) blur_box_sums[i][j][k] += blur_box_sums[i][j - 1][k];
@@ -399,7 +420,8 @@ void Filters::blur(Image &inputImage, Image &outputImage, const int &blurRadius,
             }
         }
 
-        for (int j = 0; j < inputImage.width; ++j) {
+        for (int j = 0; j < inputImage.width; ++j)
+        {
             int x_1 = max(0, j - blurRadius);
             int y_1 = max(0, i - blurRadius);
             int x_2 = min(inputImage.width - 1, j + blurRadius);
@@ -407,7 +429,8 @@ void Filters::blur(Image &inputImage, Image &outputImage, const int &blurRadius,
 
             int count = (x_2 - x_1 + 1) * (y_2 - y_1 + 1);
 
-            for (U8 k = 0; k < 3; ++k) {
+            for (U8 k = 0; k < 3; ++k)
+            {
                 size_t sum = blur_box_sums[y_2][x_2][k];
                 if (x_1 > 0) sum -= blur_box_sums[y_2][x_1 - 1][k];
                 if (y_1 > 0) sum -= blur_box_sums[y_1 - 1][x_2][k];
@@ -418,11 +441,14 @@ void Filters::blur(Image &inputImage, Image &outputImage, const int &blurRadius,
     }
 }
 
-void Filters::sunlight(Image &inputImage, Image &outputImage) {
+void Filters::sunlight(Image &inputImage, Image &outputImage)
+{
     // Apply sunlight effect by reducing intensity of blue channel
-    for (int i = 0; i < inputImage.width; ++i) {
+    for (int i = 0; i < inputImage.width; ++i)
+    {
         Utilities::displayProgressBar(i, inputImage.width - 1);
-        for (int j = 0; j < inputImage.height; ++j) {
+        for (int j = 0; j < inputImage.height; ++j)
+        {
             // Keep red and green channels unchanged, reduce blue channel intensity
             outputImage(i, j, 0) = inputImage(i, j, 0);
             outputImage(i, j, 1) = inputImage(i, j, 1);
@@ -431,7 +457,8 @@ void Filters::sunlight(Image &inputImage, Image &outputImage) {
     }
 }
 
-void Filters::oilPainting(Image &inputImage, Image &outputImage) {
+void Filters::oilPainting(Image &inputImage, Image &outputImage)
+{
 // Apply oil painting effect based on intensity levels and neighborhood pixels
     U8 RADIUS = min(5, (((inputImage.height * inputImage.width) / 36000) * 2));
     if (RADIUS < 2) RADIUS = 2;
@@ -456,7 +483,7 @@ void Filters::oilPainting(Image &inputImage, Image &outputImage) {
                     int current_intensity = ((inputImage(n, m, 0) + inputImage(n, m, 1) +
                                               inputImage(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
                     intensity_count[current_intensity]++;
-                    for (int k = 0; k < 3; k++) color_sums[current_intensity][k] += inputImage(n, m, k);
+                    for (U8 k = 0; k < 3; k++) color_sums[current_intensity][k] += inputImage(n, m, k);
                 }
             }
 
@@ -469,7 +496,8 @@ void Filters::oilPainting(Image &inputImage, Image &outputImage) {
     }
 }
 
-void Filters::oldTV(Image &inputImage, Image &outputImage) {
+void Filters::oldTV(Image &inputImage, Image &outputImage)
+{
 // Initialize random number generator for noise
     random_device rd;
     mt19937 gen(rd());
