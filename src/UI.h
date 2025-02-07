@@ -22,6 +22,10 @@ namespace PromptHandlers
         extern const std::string flipFilterArg;
         extern const std::string rotateFilterArg;
         extern const std::string exposureFilterArg;
+        extern const std::string frameFilterArg;
+        extern const std::string frameFilterColorArg;
+        extern const std::string resizeFilter_wArg;
+        extern const std::string resizeFilter_hArg;
 
         // Crop
         std::string cropFilterRow_Arg(size_t);
@@ -29,8 +33,6 @@ namespace PromptHandlers
         std::string cropFilterHeight_Arg(size_t, size_t);
         std::string cropFilterWidth_Arg(size_t, size_t);
     }
-    std::string image_1_filename{};
-    std::string image_2_filename{};
 }
 
 class UI
@@ -47,7 +49,8 @@ public:
     Photo *inputPhoto1{nullptr};
     Photo *inputPhoto2{nullptr};
     Photo *outputPhoto{nullptr};
-
+    std::string image_1_filename{};
+    std::string image_2_filename{};
     ~UI();
 };
 #endif

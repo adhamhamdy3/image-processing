@@ -9,7 +9,8 @@ using namespace std;
 
 int main()
 {
-    UI::Run();
+    UI p;
+    p.Run();
     return 0;
 }
 
