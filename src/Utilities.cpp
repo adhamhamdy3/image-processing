@@ -3,7 +3,7 @@
 using namespace std;
 
 void Utilities::displayProgressBar(int currentIndex, int maxIndex, string optionalTitle) {
-    U8 percentage = 100 * (currentIndex + 1) / (maxIndex + 1); // Calculate percentage
+    int percentage = 100 * (currentIndex + 1) / (maxIndex + 1); // Calculate percentage
     cout << left << "\r" << optionalTitle << setfill('#') << setw(percentage / 5) << "" << setfill(' ') <<
          setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar
     cout.flush(); // Flush output
