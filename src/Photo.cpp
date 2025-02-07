@@ -47,12 +47,7 @@ void Photo::undo()
 
 Photo::~Photo()
 {
-    if (m_originalImage) delete m_originalImage;
-    if (currentImage) delete currentImage;
-
-    for (size_t i = 0; i < m_undoStack.size(); ++i) {
-        if (m_undoStack[i]) delete m_undoStack[i];
-    }
+    this->cleanUp();
 }
 
 void Photo::redo()
@@ -60,4 +55,14 @@ void Photo::redo()
     if (!canRedo()) return;
 
     currentImage = m_undoStack[++m_undoSlider];
+}
+
+void Photo::cleanUp()
+{
+    if (m_originalImage) delete m_originalImage;
+    if (currentImage) delete currentImage;
+
+    for (size_t i = 0; i < m_undoStack.size(); ++i) {
+        if (m_undoStack[i]) delete m_undoStack[i];
+    }
 }

@@ -1,5 +1,7 @@
 #include "DEFs.h"
 #include "Utilities.h"
+#include "UI.h"
+
 
 using namespace std;
 using namespace PromptHandlers;
@@ -15,13 +17,13 @@ void UI::Run()
         FilterOption filter = static_cast<FilterOption>(choice);
         if(filter == FilterOption::Quit) break;
 
-        image_1_filename = Utilities::Validations::v_ImgName(image_1_prompt(choice), true);
-        inputPhoto1 = new Photo(new Image(Utilities::importIMG(image_1_filename)));
+        img1_fileName = Utilities::Validations::v_ImgName(img1_Prompt(choice), true);
+        inputPhoto1 = new Photo(new Image(Utilities::importIMG(img1_fileName)));
 
         if (choice == (int) FilterOption::Merge)
         {
-            image_2_filename = Utilities::Validations::v_ImgName(image_2_filename, true);
-            inputPhoto2 = new Photo(new Image(Utilities::importIMG(image_2_filename)));
+            img2_fileName = Utilities::Validations::v_ImgName(img2_Prompt, true);
+            inputPhoto2 = new Photo(new Image(Utilities::importIMG(img2_fileName)));
         }
 
         FilterParams params;
@@ -133,12 +135,27 @@ void UI::Run()
         cout << endl << "---------------------------------------------------------------------------------------------------------"
              << endl << "---------------------------------------------------------------------------------------------------------";
 
+       this->cleanUp();
     }
 }
 
 UI::~UI()
 {
-    if (inputPhoto1) delete inputPhoto1;
-    if (inputPhoto2) delete inputPhoto2;
-    if (outputPhoto) delete outputPhoto;
+    this->cleanUp();
+}
+
+void UI::cleanUp() {
+    if (inputPhoto1) {
+        delete inputPhoto1;
+        inputPhoto1 = nullptr;
+    }
+    if (inputPhoto2) {
+        delete inputPhoto2;
+        inputPhoto2 = nullptr;
+    }
+    if (outputPhoto)
+    {
+        delete outputPhoto;
+        outputPhoto = nullptr;
+    }
 }

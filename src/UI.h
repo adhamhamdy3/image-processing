@@ -8,7 +8,6 @@
 namespace FilterConstants
 {
     extern const std::unordered_map<int, std::vector<int>> FRAME_COLORS;
-    extern const std::vector<std::pair<int, int>> ROTATION_ANGLES;
     extern const std::string FILTER_MENU;
 }
 
@@ -16,7 +15,7 @@ namespace PromptHandlers
 {
     namespace ConstantPrompts
     {
-        std::string image_1_prompt(U8 choice);
+        std::string img1_Prompt(U8 choice);
         extern const std::string img2_Prompt;
         extern const std::string mergeFilterArg;
         extern const std::string flipFilterArg;
@@ -45,12 +44,15 @@ public:
         OilPainting, OldTV, Quit = 16
     };
 
+    Photo *inputPhoto1 {nullptr};
+    Photo *inputPhoto2 {nullptr};
+    Photo *outputPhoto {nullptr};
+    std::string img1_fileName{};
+    std::string img2_fileName{};
+
     void Run();
-    Photo *inputPhoto1{nullptr};
-    Photo *inputPhoto2{nullptr};
-    Photo *outputPhoto{nullptr};
-    std::string image_1_filename{};
-    std::string image_2_filename{};
+    void cleanUp();
     ~UI();
 };
+
 #endif

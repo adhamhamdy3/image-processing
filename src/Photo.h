@@ -16,12 +16,12 @@ public:
     void pushChanges();
     void undo();
     void redo();
+    void cleanUp();
 
 private:
     Image *m_originalImage{nullptr};
     std::vector<Image*> m_undoStack{};
     int m_undoSlider{};
-
 };
 
 

@@ -18,10 +18,10 @@ const std::string FilterConstants::FILTER_MENU =
         " 13) Sunlight \n 14) Oil Painting \n 15) Old TV \n 16) Quit \n\n"
         "Choose a filter, or quit (1-16): ";
 
-std::string PromptHandlers::ConstantPrompts::image_1_prompt(U8 choice)
+std::string PromptHandlers::ConstantPrompts::img1_Prompt(U8 choice)
 {
-    return {"Please enter the filename (NOT FILEPATH, including extension) of the " + std::string(choice == 4 ? "first " :
-                                                                                             "") + "image (must exist in this directory) " + "\n" + "(Available formats: .jpg, .png, .bmp, .tga): "
+    return {"Please enter the filename (NOT FILEPATH, including extension) of the " + std::string(choice == 4 ? "first " :"")
+    + "image (must exist in this directory) " + "\n" + "(Available formats: .jpg, .png, .bmp, .tga): "
     };
 }
 
@@ -133,8 +133,11 @@ namespace {
                 Filters::resize(*input1->currentImage, *output->currentImage);
                 break;
             case UI::FilterOption::Blur:
-                Filters::blur(*input1->currentImage, *output->currentImage, sqrt((input1->currentImage->height * input1->currentImage->width))/160, 1);
-                Filters::blur(*output->currentImage, *output->currentImage, sqrt((input1->currentImage->height * input1->currentImage->width))/80, 2);
+                Filters::blur(*input1->currentImage, *output->currentImage,
+                              sqrt((input1->currentImage->height * input1->currentImage->width))/160, 1);
+
+                Filters::blur(*output->currentImage, *output->currentImage,
+                              sqrt((input1->currentImage->height * input1->currentImage->width))/80, 2);
                 break;
             case UI::FilterOption::Sunlight:
                 Filters::sunlight(*input1->currentImage, *output->currentImage);
