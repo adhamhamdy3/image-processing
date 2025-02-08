@@ -379,23 +379,21 @@ void Filters::frame(Image *inputImage, int fancy, int color,
 
 void Filters::detectEdges(Image *inputImage)
 {
+    Image outputImage(inputImage->width, inputImage->height);
+
     const int sobelX[3][3] = {{-1, 0, 1},
                               {-2, 0, 2},
                               {-1, 0, 1}};
-
     const int sobelY[3][3] = {{-1, -2, -1},
                               {0, 0, 0},
                               {1, 2, 1}};
-
-    for (int y = 1; y + 1 < inputImage->height; ++y)
+    for (size_t y = 1; y + 1 < inputImage->height; ++y)
     {                                                             // Loop through each pixel in height
         Utilities::displayProgressBar(y, inputImage->height - 2); // Display progress bar
-
-        for (int x = 1; x + 1 < inputImage->width; ++x)
+        for (size_t x = 1; x + 1 < inputImage->width; ++x)
         { // Loop through each pixel in width
             float gradientX = 0.0;
             float gradientY = 0.0;
-
             for (int j = -1; j <= 1; ++j)
             {
                 for (int i = -1; i <= 1; ++i)
@@ -407,13 +405,13 @@ void Filters::detectEdges(Image *inputImage)
             }
             float magnitude = sqrt(gradientX * gradientX + gradientY * gradientY); // Calculate magnitude
             magnitude = 255 - magnitude;                                           // Invert magnitude for edge detection
-
             // Set output pixel values based on magnitude
-            inputImage->setPixel(x, y, 0, magnitude);
-            inputImage->setPixel(x, y, 1, magnitude);
-            inputImage->setPixel(x, y, 2, magnitude);
+            outputImage(x, y, 0) = magnitude;
+            outputImage(x, y, 1) = magnitude;
+            outputImage(x, y, 2) = magnitude;
         }
     }
+    swap(inputImage->imageData, outputImage.imageData);
 }
 
 Image &Filters::resize(Image &inputImage, Image &outputImage)
