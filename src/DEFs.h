@@ -82,28 +82,28 @@ void applyFilter(FilterOption choice, Photo* input1, Photo* input2,
 
     switch(choice) {
         case FilterOption::GrayScale:
-            Filters::grayScale(*input1->currentImage, *output->currentImage);
-            // input1->pushChanges();
+            Filters::grayScale(input1->currentImage);
+            input1->pushChanges();
             break;
         case FilterOption::BlackWhite:
-            Filters::Black_White(*input1->currentImage, *output->currentImage);
-            // input1->pushChanges();
+            Filters::Black_White(input1->currentImage);
+            input1->pushChanges();
             break;
         case FilterOption::Invert:
-            Filters::invert(*input1->currentImage, *output->currentImage);
-            // input1->pushChanges();
+            Filters::invert(input1->currentImage);
+            input1->pushChanges();
             break;
         case FilterOption::Merge:
             Filters::merge(*input1->currentImage, *input2->currentImage, *output->currentImage, params.resize_or_not);
             // input1->pushChanges();
             break;
         case FilterOption::Flip:
-            Filters::flip(*input1->currentImage, *output->currentImage, params.horizontal_or_vertical);
-            // input1->pushChanges();
+            Filters::flip(input1->currentImage, params.horizontal_or_vertical);
+            input1->pushChanges();
             break;
         case FilterOption::Rotate:
-            Filters::rotate(*input1->currentImage, *output->currentImage, params.rotation_angle);
-            // input1->pushChanges();
+            Filters::rotate(input1->currentImage, params.rotation_angle);
+            input1->pushChanges();
             break;
         case FilterOption::Exposure:
             Filters::exposure(*input1->currentImage, *output->currentImage, params.lighten);

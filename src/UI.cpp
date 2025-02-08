@@ -131,7 +131,8 @@ void UI::Run()
 
         cout << endl;
         // Save the output image
-        Utilities::exportIMG(*outputPhoto->currentImage);
+        // TODO export outputImg if merge
+        Utilities::exportIMG(*inputPhoto1->currentImage);
         cout << endl << "---------------------------------------------------------------------------------------------------------"
              << endl << "---------------------------------------------------------------------------------------------------------";
 

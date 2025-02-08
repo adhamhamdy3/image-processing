@@ -2,42 +2,42 @@
 
 using namespace std;
 
-void Filters::grayScale(Image &inputImage, Image &outputImage)
+void Filters::grayScale(Image *inputImage)
 {
-    for (int i = 0; i < inputImage.width; i++) // Loop through each pixel in width
+    for (size_t i = 0; i < inputImage->width; i++) // Loop through each pixel in width
     {
-        Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
+        Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
 
-        for (int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
+        for (size_t j = 0; j < inputImage->height; j++) // Loop through each pixel in height
         {
             U16 avg = 0; // Initialize average value for grayScale calculation
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
-                avg += inputImage(i, j, k); // Sum RGB values
+                avg += inputImage->getPixel(i, j, k); // Sum RGB values
             }
             avg /= 3; // Calculate average RGB value
 
             for(U8 k = 0; k < 3; k++) // Assign average value to each RGB channel in output image
             {
-                outputImage(i, j, k) = avg;
+                inputImage->setPixel(i, j, k, avg);
             }
         }
     }
 }
 
-void Filters::Black_White(Image &inputImage, Image &outputImage)
+void Filters::Black_White(Image *inputImage)
 {
-    for(int i = 0; i < inputImage.width; i++) // Loop through each pixel in width
+    for(size_t i = 0; i < inputImage->width; i++) // Loop through each pixel in width
     {
-        Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
+        Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
 
-        for (int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
+        for (size_t j = 0; j < inputImage->height; j++) // Loop through each pixel in height
         {
             U16 avg = 0; // Initialize average value for black and white calculation
 
-            for (U8 k = 0; k < inputImage.channels; k++) // Loop through channels
+            for (U8 k = 0; k < inputImage->channels; k++) // Loop through channels
             {
-                avg += inputImage(i, j, k); // Sum channel values
+                avg += inputImage->getPixel(i, j, k); // Sum channel values
             }
 
             avg /= 3; // Calculate average value
@@ -47,23 +47,24 @@ void Filters::Black_White(Image &inputImage, Image &outputImage)
 
             for (U8 k = 0; k < 3; k++) // Assign black or white value to each RGB channel in output image
             {
-                outputImage(i, j, k) = avg;
+                inputImage->setPixel(i, j, k, avg);
             }
         }
     }
 }
 
-void Filters::invert(Image &inputImage, Image &outputImage)
+void Filters::invert(Image *inputImage)
 {
-    for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
+    for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
     {
-        Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
+        Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
 
-        for (int j = 0; j < inputImage.width; j++) // Loop through each pixel in width
+        for (size_t j = 0; j < inputImage->width; j++) // Loop through each pixel in width
         {
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
-                outputImage(j, i, k) = 255 - inputImage(j, i, k); // Invert color values
+                U8 invert = 0xFF - inputImage->getPixel(j, i, k); // Invert color values
+                inputImage->setPixel(j, i, k, invert);
             }
         }
     }
@@ -71,7 +72,7 @@ void Filters::invert(Image &inputImage, Image &outputImage)
 
 void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
 {
-    if (resize_or_not == 0) // If resizing is not required
+    if (!resize_or_not) // If resizing is not required
     {
         for (int i = 0; i < outputImage.width; ++i) // Loop through each pixel in width
         {
@@ -115,61 +116,77 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
     }
 }
 
-void Filters::flip(Image &inputImage, Image &outputImage, U8 horizontal_or_vertical)
+void Filters::flip(Image *inputImage, int horizontal_or_vertical)
 {
-    H_V choice = (H_V) horizontal_or_vertical;
+    H_V choice = static_cast<H_V>(horizontal_or_vertical);
+    Image tempImage(*inputImage);  // Temporary image for safe modification
+
     switch(choice)
     {
-        case H_V::H: // Horizontal flip
-            for(int i = inputImage.width - 1; i >= 0; i--) // Loop through each pixel in reversed width
+        case H_V::H:  // Horizontal flip
+        {
+            const int width = static_cast<int>(inputImage->width);
+            for(int x = 0; x < width; x++)
             {
-                Utilities::displayProgressBar((inputImage.width - 1) - i, inputImage.width - 1); // Display progress bar
-                for(int j = 0; j < inputImage.height; j++) // Loop through each pixel in height
+                Utilities::displayProgressBar(x, width - 1);
+                for(size_t y = 0; y < inputImage->height; y++)
                 {
-                    for (U8 k = 0; k < 3; k++) // Loop through RGB channels
+                    for(U8 channel = 0; channel < 3; channel++)
                     {
-                        outputImage(inputImage.width - 1 - i, j, k) = inputImage(i, j, k); // Perform horizontal flip
+                        const int mirrored_x = width - 1 - x;
+                        tempImage.setPixel(mirrored_x, y, channel,
+                                           inputImage->getPixel(x, y, channel));
                     }
                 }
             }
             break;
-
-        case H_V::V: // Vertical flip
-            for(int i = 0; i < inputImage.width; i++) // Loop through each pixel in width
+        }
+        case H_V::V:  // Vertical flip
+        {
+            const int height = static_cast<int>(inputImage->height);
+            for(size_t x = 0; x < inputImage->width; x++)
             {
-                Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
-                for(int j = inputImage.height - 1; j >= 0; j--) // Loop through each pixel in reversed height
+                Utilities::displayProgressBar(x, inputImage->width - 1);
+                for(int y = 0; y < height; y++)
                 {
-                    for(U8 k = 0; k < 3; k++) // Loop through RGB channels
+                    for(U8 channel = 0; channel < 3; channel++)
                     {
-                        outputImage(i, inputImage.height - 1 - j, k) = inputImage(i, j, k); // Perform vertical flip
+                        const int mirrored_y = height - 1 - y;
+                        tempImage.setPixel(x, mirrored_y, channel,
+                                           inputImage->getPixel(x, y, channel));
                     }
                 }
             }
             break;
+        }
     }
+
+    *inputImage = tempImage;  // Apply final result
 }
 
-void Filters::rotate(Image &inputImage, Image &outputImage, int rotationAngle)
+void Filters::rotate(Image *inputImage, int rotationAngle)
 {
     ANGLE rAngle = (ANGLE) rotationAngle;
-    for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
+    for (int i = 0; i < inputImage->height; i++) // Loop through each pixel in height
     {
-        Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
-        for (int j = 0; j < inputImage.width; j++) // Loop through each pixel in width
+        Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
+        for (int j = 0; j < inputImage->width; j++) // Loop through each pixel in width
         {
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
                 switch (rAngle) // Perform rotation based on specified angle
                 {
                     case ANGLE::RIGHT:
-                        outputImage(outputImage.width - i - 1, j, k) = inputImage(j, i, k); // Rotate 90 degrees clockwise
+                        // outputImage(outputImage.width - i - 1, j, k) = inputImage(j, i, k); // Rotate 90 degrees clockwise
+                        inputImage->setPixel(inputImage->width - i - 1, j, k, inputImage->getPixel(j, i, k));
                         break;
                     case ANGLE::STRAIGHT:
-                        outputImage(outputImage.width - j - 1, outputImage.height - i - 1, k) = inputImage(j, i, k); // Rotate 180 degrees clockwise
+                        // outputImage(outputImage.width - j - 1, outputImage.height - i - 1, k) = inputImage(j, i, k); // Rotate 180 degrees clockwise
+                        inputImage->setPixel(inputImage->width - j - 1, inputImage->height - i - 1, k, inputImage->getPixel(j, i, k));
                         break;
                     case ANGLE::OBTUSE:
-                        outputImage(i, outputImage.height - j - 1, k) = inputImage(j, i, k); // Rotate 270 degrees clockwise
+                        // outputImage(i, outputImage.height - j - 1, k) = inputImage(j, i, k); // Rotate 270 degrees clockwise
+                        inputImage->setPixel(i, inputImage->height - j - 1, k, inputImage->getPixel(j, i, k));
                         break;
                 }
             }

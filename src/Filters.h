@@ -17,12 +17,13 @@ enum class ANGLE : int
 
 namespace Filters
 {
-    void grayScale(Image &inputImage, Image &outputImage);
-    void Black_White(Image &inputImage, Image &outputImage);
-    void invert(Image &inputImage, Image &outputImage);
+    void grayScale(Image *inputImage);
+    void Black_White(Image *inputImage);
+    void invert(Image *inputImage);
     void merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not);
-    void flip(Image &inputImage, Image &outputImage, U8 horizontal_or_vertical);
-    void rotate(Image &inputImage, Image &outputImage, int rotationAngle);
+
+    void flip(Image *inputImage, int horizontal_or_vertical);
+    void rotate(Image *inputImage, int rotationAngle);
     void exposure(Image &inputImage, Image &outputImage, bool lighten);
     void crop(Image &inputImage, Image &outputImage, int vertexRow_Num, int vertexCol_Num);
     void frame(Image &inputImage, Image &outputImage, int fancy, int color, const std::unordered_map <int,
