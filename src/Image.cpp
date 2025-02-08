@@ -53,11 +53,11 @@ Image::Image(std::string filename) : filename((filename))
     loadNewImage(this->filename);
 }
 
-Image::Image(int mWidth, int mHeight)
+Image::Image(size_t mWidth, size_t mHeight)
 {
     this->width = mWidth;
     this->height = mHeight;
-    this->imageData = (unsigned char *)malloc(mWidth * mHeight * this->channels);
+    this->imageData = (U8 *)malloc(mWidth * mHeight * this->channels);
 }
 
 Image::Image(const Image &other)
@@ -78,7 +78,7 @@ Image &Image::operator=(const Image &image)
     this->width = image.width;
     this->height = image.height;
     this->channels = image.channels;
-    imageData = static_cast<unsigned char *>(malloc(width * height * channels));
+    imageData = static_cast<U8 *>(malloc(width * height * channels));
 
     for (int i = 0; i < image.width * image.height * this->channels; i++)
     {
@@ -167,7 +167,7 @@ bool Image::saveImage(const std::string &outputFilename)
     return true;
 }
 
-unsigned char &Image::getPixel(int x, int y, int c)
+U8 &Image::getPixel(size_t x, size_t y, U8 c)
 {
     if (x > width || x < 0)
     {
@@ -188,7 +188,7 @@ unsigned char &Image::getPixel(int x, int y, int c)
     return imageData[(y * width + x) * channels + c];
 }
 
-const unsigned char &Image::getPixel(int x, int y, int c) const
+const U8 &Image::getPixel(size_t x, size_t y, U8 c) const
 {
     if (x > width || x < 0)
     {
@@ -209,7 +209,7 @@ const unsigned char &Image::getPixel(int x, int y, int c) const
     return imageData[(y * width + x) * channels + c];
 }
 
-void Image::setPixel(int x, int y, int c, unsigned char value)
+void Image::setPixel(size_t x, size_t y, U8 c, U8 value)
 {
     if (x > width || x < 0)
     {
@@ -230,12 +230,12 @@ void Image::setPixel(int x, int y, int c, unsigned char value)
     imageData[(y * width + x) * channels + c] = value;
 }
 
-const unsigned char &Image::operator()(int row, int col, int channel) const
+const U8 &Image::operator()(size_t row, size_t col, U8 channel) const
 {
     return getPixel(row, col, channel);
 }
 
-unsigned char &Image::operator()(int row, int col, int channel)
+U8 &Image::operator()(size_t row, size_t col, U8 channel)
 {
     return getPixel(row, col, channel);
 }

@@ -29,8 +29,8 @@ namespace Utilities
                            int halfOfOuter_W, int thickness);
     }
 
-    void displayProgressBar(int currentIndex, int maxIndex, std::string optionalTitle = "");
-    int radialDistance(int i_1, int j_1, int i_2, int j_2);
+    void displayProgressBar(size_t currentIndex, size_t maxIndex, const std::string &optionalTitle = "");
+    float radialDistance(size_t i_1, size_t j_1, float i_2, float j_2);
 
     Image importIMG(const std::string &fileName);
     void exportIMG(Image &outputImg);

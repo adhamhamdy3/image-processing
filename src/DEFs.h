@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 // Constants initialization
-const std::unordered_map<int, std::vector<int>> FilterConstants::FRAME_COLORS =
+const std::unordered_map<U8, std::vector<U16>> FilterConstants::FRAME_COLORS =
     {
         {1, {0, 0, 0}}, {2, {255, 255, 255}}, {3, {80, 40, 0}}, {4, {255, 0, 0}}, {5, {0, 255, 0}}, {6, {0, 0, 255}}, {7, {255, 255, 0}}};
 
@@ -100,19 +100,20 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
         input1->pushChanges();
         break;
     case FilterOption::Exposure:
-        Filters::exposure(*input1->currentImage, *output->currentImage, params.lighten);
-        // input1->pushChanges();
+        Filters::exposure(input1->currentImage, params.lighten);
+        input1->pushChanges();
         break;
     case FilterOption::Crop:
-        Filters::crop(*input1->currentImage, *output->currentImage, params.vertex_row_no, params.vertex_col_no);
-        // input1->pushChanges();
+        Filters::crop(input1->currentImage, params.vertex_row_no, params.vertex_col_no, params.crop_width, params.crop_height);
+        input1->pushChanges();
         break;
     case FilterOption::Frame:
-        Filters::frame(*input1->currentImage, *output->currentImage, params.fancy, color, FilterConstants::FRAME_COLORS);
-        // input1->pushChanges();
+        Filters::frame(input1->currentImage, params.fancy, color, FilterConstants::FRAME_COLORS);
+        input1->pushChanges();
         break;
     case FilterOption::Edges:
-        Filters::edges(*input1->currentImage, *output->currentImage);
+        Filters::detectEdges(input1->currentImage);
+        input1->pushChanges();
         break;
     case FilterOption::Resize:
         Filters::resize(*input1->currentImage, *output->currentImage);

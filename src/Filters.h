@@ -26,11 +26,11 @@ namespace Filters
     void merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not); // TODO check if u can remove output
     void flip(Image *inputImage, U8 horizontal_or_vertical);
     void rotate(Image *inputImage, U16 rotationAngle);
-    void exposure(Image &inputImage, Image &outputImage, bool lighten);
-    void crop(Image &inputImage, Image &outputImage, size_t vertexRow_Num, size_t vertexCol_Num);
-    void frame(Image &inputImage, Image &outputImage, int fancy, int color, const std::unordered_map<int, std::vector<int>> &color_to_rgb);
+    void exposure(Image *inputImage, bool lighten);
+    void crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height);
+    void frame(Image *inputImage, int fancy, int color, const std::unordered_map<U8, std::vector<U16>> &color_to_rgb);
 
-    void edges(Image &inputImage, Image &outputImage);
+    void detectEdges(Image *inputImage);
     Image &resize(Image &inputImage, Image &outputImage);
     void blur(Image &inputImage, Image &outputImage, int blurRadius, int call_Num);
     void sunlight(Image &inputImage, Image &outputImage);

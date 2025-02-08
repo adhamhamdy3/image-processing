@@ -27,7 +27,7 @@ enum class FilterOption
 
 namespace FilterConstants
 {
-    extern const std::unordered_map<int, std::vector<int>> FRAME_COLORS;
+    extern const std::unordered_map<U8, std::vector<U16>> FRAME_COLORS;
     extern const std::string FILTER_MENU;
 }
 

@@ -47,10 +47,10 @@ private:
     std::string filename; ///< Stores the filename of the image.
 
 public:
-    int width = 0;                      ///< Width of the image.
-    int height = 0;                     ///< Height of the image.
-    int channels = 3;                   ///< Number of color channels in the image.
-    unsigned char *imageData = nullptr; ///< Pointer to the image data.
+    int width = 0;           ///< Width of the image.
+    int height = 0;          ///< Height of the image.
+    int channels = 3;        ///< Number of color channels in the image.
+    U8 *imageData = nullptr; ///< Pointer to the image data.
 
     /**
      * @brief Default constructor for the Image class.
@@ -70,7 +70,7 @@ public:
      * @param mWidth The width of the image.
      * @param mHeight The height of the image.
      */
-    Image(int mWidth, int mHeight);
+    Image(size_t mWidth, size_t mHeight);
 
     /**
      * @brief Constructor that creates an image by copying another image.
@@ -120,9 +120,9 @@ public:
      * @return Reference to the pixel value.
      * @throws std::out_of_range If the coordinates or channel index is out of bounds.
      */
-    unsigned char &getPixel(int x, int y, int c);
+    U8 &getPixel(size_t x, size_t y, U8 c);
 
-    const unsigned char &getPixel(int x, int y, int c) const;
+    const U8 &getPixel(size_t x, size_t y, U8 c) const;
     /**
      * @brief Sets the pixel value at the specified position and channel.
      *
@@ -132,7 +132,7 @@ public:
      * @param value The new value to set.
      * @throws std::out_of_range If the coordinates or channel index is out of bounds.
      */
-    void setPixel(int x, int y, int c, unsigned char value);
+    void setPixel(size_t x, size_t y, U8 c, U8 value);
 
     /**
      * @brief Overloaded function call operator to access pixels.
@@ -142,9 +142,9 @@ public:
      * @param channel The color channel index (0 for red, 1 for green, 2 for blue).
      * @return Reference to the pixel value.
      */
-    const unsigned char &operator()(int row, int col, int channel) const;
+    const U8 &operator()(size_t row, size_t col, U8 channel) const;
 
-    unsigned char &operator()(int row, int col, int channel);
+    U8 &operator()(size_t row, size_t col, U8 channel);
 
     bool operator==(const Image &other) const;
 };

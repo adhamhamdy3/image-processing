@@ -169,129 +169,176 @@ void Filters::flip(Image *inputImage, U8 horizontal_or_vertical)
 void Filters::rotate(Image *inputImage, U16 rotationAngle)
 {
     ANGLE rAngle = (ANGLE)rotationAngle;
-    for (int i = 0; i < inputImage->height; i++) // Loop through each pixel in height
+
+    // Original dimensions
+    size_t origWidth = inputImage->width;
+    size_t origHeight = inputImage->height;
+    size_t newWidth, newHeight;
+
+    // Determine new dimensions based on rotation angle
+    switch (rAngle)
     {
-        Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
-        for (int j = 0; j < inputImage->width; j++)               // Loop through each pixel in width
+    case ANGLE::RIGHT:
+    case ANGLE::OBTUSE:
+        newWidth = origHeight;
+        newHeight = origWidth;
+        break;
+    case ANGLE::STRAIGHT:
+        newWidth = origWidth;
+        newHeight = origHeight;
+        break;
+    default:
+        return; // Invalid angle
+    }
+
+    // Create temporary pixel buffer
+    U8 *tempData = new U8[newWidth * newHeight * 3]; // 3 channels (RGB)
+
+    for (size_t y = 0; y < origHeight; y++)
+    {
+        Utilities::displayProgressBar(y, origHeight - 1);
+        for (size_t x = 0; x < origWidth; x++)
         {
-            for (U8 k = 0; k < 3; k++) // Loop through RGB channels
+            for (U8 channel = 0; channel < 3; channel++)
             {
-                switch (rAngle) // Perform rotation based on specified angle
+                U8 value = inputImage->getPixel(x, y, channel);
+                int newX, newY;
+
+                // Calculate new coordinates
+                switch (rAngle)
                 {
-                case ANGLE::RIGHT:
-                    // outputImage(outputImage.width - i - 1, j, k) = inputImage(j, i, k); // Rotate 90 degrees clockwise
-                    inputImage->setPixel(inputImage->width - i - 1, j, k, inputImage->getPixel(j, i, k));
+                case ANGLE::RIGHT: // 90° clockwise
+                    newX = origHeight - 1 - y;
+                    newY = x;
                     break;
-                case ANGLE::STRAIGHT:
-                    // outputImage(outputImage.width - j - 1, outputImage.height - i - 1, k) = inputImage(j, i, k); // Rotate 180 degrees clockwise
-                    inputImage->setPixel(inputImage->width - j - 1, inputImage->height - i - 1, k, inputImage->getPixel(j, i, k));
+                case ANGLE::STRAIGHT: // 180°
+                    newX = origWidth - 1 - x;
+                    newY = origHeight - 1 - y;
                     break;
-                case ANGLE::OBTUSE:
-                    // outputImage(i, outputImage.height - j - 1, k) = inputImage(j, i, k); // Rotate 270 degrees clockwise
-                    inputImage->setPixel(i, inputImage->height - j - 1, k, inputImage->getPixel(j, i, k));
+                case ANGLE::OBTUSE: // 270° clockwise
+                    newX = y;
+                    newY = origWidth - 1 - x;
                     break;
+                default:
+                    newX = x;
+                    newY = y;
                 }
+
+                // Calculate index in temporary buffer
+                int tempIndex = (newY * newWidth + newX) * 3 + channel;
+                tempData[tempIndex] = value;
             }
         }
     }
+
+    // Update inputImage with rotated data
+    delete[] inputImage->imageData; // Assume data is stored as U8* data
+    inputImage->width = newWidth;
+    inputImage->height = newHeight;
+    inputImage->imageData = tempData;
 }
 
-void Filters::exposure(Image &inputImage, Image &outputImage, bool lighten)
+void Filters::exposure(Image *inputImage, bool lighten)
 {
     if (lighten) // Lighten image
     {
-        for (int i = 0; i < inputImage.width; ++i) // Loop through each pixel in width
+        for (size_t i = 0; i < inputImage->width; ++i) // Loop through each pixel in width
         {
-            Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
-            for (int j = 0; j < inputImage.height; ++j)             // Loop through each pixel in height
+            Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
+            for (size_t j = 0; j < inputImage->height; ++j)          // Loop through each pixel in height
             {
                 for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
-                    int light = inputImage(i, j, k) * 0.5;                        // Calculate lightening factor
-                    outputImage(i, j, k) = min(inputImage(i, j, k) + light, 255); // Apply lightening effect
+                    U8 light = inputImage->getPixel(i, j, k) * 0.5;                                 // Calculate lightening factor
+                    inputImage->setPixel(i, j, k, min(inputImage->getPixel(i, j, k) + light, 255)); // Apply lightening effect
                 }
             }
         }
     }
     else // Darken image
     {
-        for (int i = 0; i < inputImage.width; ++i) // Loop through each pixel in width
+        for (size_t i = 0; i < inputImage->width; ++i) // Loop through each pixel in width
         {
-            Utilities::displayProgressBar(i, inputImage.width - 1); // Display progress bar
-            for (int j = 0; j < inputImage.height; ++j)             // Loop through each pixel in height
+            Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
+            for (size_t j = 0; j < inputImage->height; ++j)          // Loop through each pixel in height
             {
                 for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
                 {
-                    int dark = inputImage(i, j, k) * 0.5;                        // Calculate darkening factor
-                    outputImage(i, j, k) = min(inputImage(i, j, k) - dark, 255); // Apply darkening effect
+                    U8 dark = inputImage->getPixel(i, j, k) * 0.5;                                 // Calculate darkening factor
+                    inputImage->setPixel(i, j, k, min(inputImage->getPixel(i, j, k) - dark, 255)); // Apply darkening effect
                 }
             }
         }
     }
 }
 
-void Filters::crop(Image &inputImage, Image &outputImage, size_t vertexRow_Num, size_t vertexCol_Num)
+void Filters::crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height)
 {
-    for (int i = 0; i < outputImage.height; i++) // Loop through each pixel in output image height
+    Image croppedImage(width, height);
+    for (size_t i = vertexRow_Num; i < vertexRow_Num + width; i++)
     {
-        Utilities::displayProgressBar(i, outputImage.height - 1); // Display progress bar
-        for (int j = 0; j < outputImage.width; j++)               // Loop through each pixel in output image width
+        Utilities::displayProgressBar(i, vertexRow_Num + width - 1);
+
+        for (size_t j = vertexCol_Num; j < vertexCol_Num + height; j++)
         {
-            for (U8 k = 0; k < 3; k++) // Loop through RGB channels
+            for (U8 k = 0; k < inputImage->channels; k++)
             {
-                outputImage(j, i, k) = inputImage(j + vertexCol_Num, i + vertexRow_Num, k); // Crop image based on specified vertices
+                croppedImage(i - vertexRow_Num, j - vertexCol_Num, k) = inputImage->getPixel(i, j, k);
             }
         }
     }
+    swap(inputImage->imageData, croppedImage.imageData);
+    inputImage->width = width;
+    inputImage->height = height;
 }
 
-void Filters::frame(Image &inputImage, Image &outputImage, int fancy, int color,
-                    const unordered_map<int, vector<int>> &color_to_rgb)
+void Filters::frame(Image *inputImage, int fancy, int color,
+                    const unordered_map<U8, vector<U16>> &color_to_rgb)
 {
-    int corner_size = min(inputImage.height, inputImage.width) / 20; // Calculate corner size for the frame
+    size_t cornerSize = min(inputImage->height, inputImage->width) / 20; // Calculate corner size for the frame
 
     if (fancy) // Apply fancy frame
     {
         // Fancy Design
-        for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
+        for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
         {
-            Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
-            for (int j = 0; j < inputImage.width; j++)               // Loop through each pixel in width
+            Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
+            for (size_t j = 0; j < inputImage->width; j++)            // Loop through each pixel in width
             {
                 // Calculate equivalent coordinates for symmetry
-                int equivalent_i = (i < inputImage.height / 2 ? i : inputImage.height - i - 1);
-                int equivalent_j = (j < inputImage.width / 2 ? j : inputImage.width - j - 1);
+                size_t equivalent_i = (i < inputImage->height / 2 ? i : inputImage->height - i - 1);
+                size_t equivalent_j = (j < inputImage->width / 2 ? j : inputImage->width - j - 1);
 
                 // Calculate radial distances for different frame components
-                int dist_1 = Utilities::radialDistance(equivalent_i, equivalent_j, (0.1 + 0.3) * corner_size,
-                                                       (0.1 + 2 * 0.2 + 0.3 + 0.025 + 0.2 + 0.35 + 0.3 + 0.1) *
-                                                           corner_size);
+                float dist_1 = Utilities::radialDistance(equivalent_i, equivalent_j, (0.4f) * cornerSize,
+                                                         (1.775f) *
+                                                             cornerSize);
 
-                int dist_2 = Utilities::radialDistance(equivalent_i, equivalent_j,
-                                                       (0.1 + 2 * 0.2 + 0.3 + 0.025 + 0.2 + 0.35 + 0.3 + 0.1) *
-                                                           corner_size,
-                                                       (0.1 + 0.3) * corner_size);
+                float dist_2 = Utilities::radialDistance(equivalent_i, equivalent_j,
+                                                         (1.775f) *
+                                                             cornerSize,
+                                                         (0.4f) * cornerSize);
 
                 // Apply frame color based on radial distance and rectangular frames
-                if (((0.3 - 0.08) * corner_size < dist_1 && dist_1 < 0.3 * corner_size) ||
-                    ((0.3 - 0.08) * corner_size < dist_2 && dist_2 < 0.3 * corner_size))
+                if (((0.22f) * cornerSize < dist_1 && dist_1 < 0.3f * cornerSize) ||
+                    ((0.22f) * cornerSize < dist_2 && dist_2 < 0.3f * cornerSize))
                 {
                     for (U8 k = 0; k < 3; k++)
-                        outputImage(j, i, k) = color_to_rgb.at(color)[k];
+                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                 }
                 else if (Utilities::Validations::v_inRectFrame(equivalent_i, equivalent_j,
-                                                               inputImage.height / 2, inputImage.width / 2,
-                                                               inputImage.height / 2, inputImage.width / 2,
-                                                               0.1 * corner_size))
+                                                               inputImage->height / 2, inputImage->width / 2,
+                                                               inputImage->height / 2, inputImage->width / 2,
+                                                               0.1 * cornerSize))
                 {
                     for (U8 k = 0; k < 3; k++)
-                        outputImage(j, i, k) = color_to_rgb.at(color)[k];
+                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                 }
                 // Add more conditions for other rectangular frames or custom designs if needed
                 else
                 {
                     for (U8 k = 0; k < 3; k++)
-                        outputImage(j, i, k) = inputImage(j, i, k); // Copy original pixel if not in frame
+                        inputImage->setPixel(j, i, k, inputImage->getPixel(j, i, k)); // Copy original pixel if not in frame
                 }
             }
         }
@@ -299,25 +346,30 @@ void Filters::frame(Image &inputImage, Image &outputImage, int fancy, int color,
     else
     {
         // Simple Frame
-        for (int i = 0; i < inputImage.height; i++) // Loop through each pixel in height
+        for (size_t i = 0; i < inputImage->height; i++)
         {
-            Utilities::displayProgressBar(i, inputImage.height - 1); // Display progress bar
-            for (int j = 0; j < inputImage.width; j++)               // Loop through each pixel in width
+            Utilities::displayProgressBar(i, inputImage->height - 1);
+            for (size_t j = 0; j < inputImage->width; j++)
             {
-                // Check if pixel is outside the simple frame boundary
-                if ((abs(inputImage.height / 2 - i) > inputImage.height / 2 - 0.3 * corner_size) ||
-                    (abs(inputImage.width / 2 - j) > inputImage.width / 2 - 0.3 * corner_size))
-                {
-                    for (U8 k = 0; k < 3; k++) // Apply frame color to pixel
-                    {
-                        outputImage(j, i, k) = color_to_rgb.at(color)[k];
-                    }
-                }
-                else // Copy original pixel if within frame boundary
+                // Convert to signed integers to avoid underflow and ambiguity
+                int center_i = static_cast<int>(inputImage->height / 2);
+                int center_j = static_cast<int>(inputImage->width / 2);
+                int signed_i = static_cast<int>(i);
+                int signed_j = static_cast<int>(j);
+
+                // Calculate absolute differences
+                int di = std::abs(signed_i - center_i);
+                int dj = std::abs(signed_j - center_j);
+
+                // Threshold as integer to match type
+                int threshold = static_cast<int>(0.3f * cornerSize);
+
+                // Check if pixel is outside the frame boundary
+                if (di > (center_i - threshold) || dj > (center_j - threshold))
                 {
                     for (U8 k = 0; k < 3; k++)
                     {
-                        outputImage(j, i, k) = inputImage(j, i, k);
+                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                     }
                 }
             }
@@ -325,21 +377,21 @@ void Filters::frame(Image &inputImage, Image &outputImage, int fancy, int color,
     }
 }
 
-void Filters::edges(Image &inputImage, Image &outputImage)
+void Filters::detectEdges(Image *inputImage)
 {
-    int sobelX[3][3] = {{-1, 0, 1},
-                        {-2, 0, 2},
-                        {-1, 0, 1}};
+    const int sobelX[3][3] = {{-1, 0, 1},
+                              {-2, 0, 2},
+                              {-1, 0, 1}};
 
-    int sobelY[3][3] = {{-1, -2, -1},
-                        {0, 0, 0},
-                        {1, 2, 1}};
+    const int sobelY[3][3] = {{-1, -2, -1},
+                              {0, 0, 0},
+                              {1, 2, 1}};
 
-    for (int y = 1; y + 1 < inputImage.height; ++y)
-    {                                                            // Loop through each pixel in height
-        Utilities::displayProgressBar(y, inputImage.height - 2); // Display progress bar
+    for (int y = 1; y + 1 < inputImage->height; ++y)
+    {                                                             // Loop through each pixel in height
+        Utilities::displayProgressBar(y, inputImage->height - 2); // Display progress bar
 
-        for (int x = 1; x + 1 < inputImage.width; ++x)
+        for (int x = 1; x + 1 < inputImage->width; ++x)
         { // Loop through each pixel in width
             float gradientX = 0.0;
             float gradientY = 0.0;
@@ -349,17 +401,17 @@ void Filters::edges(Image &inputImage, Image &outputImage)
                 for (int i = -1; i <= 1; ++i)
                 {
                     // Compute gradients using Sobel operator
-                    gradientX += inputImage(x + i, y + j, 0) * sobelX[j + 1][i + 1];
-                    gradientY += inputImage(x + i, y + j, 0) * sobelY[j + 1][i + 1];
+                    gradientX += inputImage->getPixel(x + i, y + j, 0) * sobelX[j + 1][i + 1];
+                    gradientY += inputImage->getPixel(x + i, y + j, 0) * sobelY[j + 1][i + 1];
                 }
             }
             float magnitude = sqrt(gradientX * gradientX + gradientY * gradientY); // Calculate magnitude
             magnitude = 255 - magnitude;                                           // Invert magnitude for edge detection
 
             // Set output pixel values based on magnitude
-            outputImage(x, y, 0) = magnitude;
-            outputImage(x, y, 1) = magnitude;
-            outputImage(x, y, 2) = magnitude;
+            inputImage->setPixel(x, y, 0, magnitude);
+            inputImage->setPixel(x, y, 1, magnitude);
+            inputImage->setPixel(x, y, 2, magnitude);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void Utilities::displayProgressBar(int currentIndex, int maxIndex, string optionalTitle)
+void Utilities::displayProgressBar(size_t currentIndex, size_t maxIndex, const string &optionalTitle)
 {
     int percentage = 100 * (currentIndex + 1) / (maxIndex + 1);                                                                                                            // Calculate percentage
     cout << left << "\r" << optionalTitle << setfill('#') << setw(percentage / 5) << "" << setfill(' ') << setw(20 - percentage / 5) << "" << "| " << (percentage) << "%"; // Display progress bar
@@ -155,9 +155,9 @@ bool Utilities::Validations::v_inRectFrame(int i, int j, int centerRow, int cent
     return false; // Point is outside the rectangular frame
 }
 
-int Utilities::radialDistance(int i_1, int j_1, int i_2, int j_2)
+float Utilities::radialDistance(size_t i_1, size_t j_1, float i_2, float j_2)
 {
-    return sqrt(pow((i_1 - i_2), 2) + pow((j_1 - j_2), 2)); // Calculate and return radial distance
+    return (float)sqrt(pow(((float)i_1 - i_2), 2) + pow(((float)j_1 - j_2), 2)); // Calculate and return radial distance
 }
 
 Image Utilities::importIMG(const std::string &fileName)
