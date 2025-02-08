@@ -7,6 +7,3 @@ int main()
     editor.Run();
     return 0;
 }
-
-
-

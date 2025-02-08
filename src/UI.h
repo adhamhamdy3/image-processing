@@ -7,9 +7,22 @@
 
 enum class FilterOption
 {
-    GrayScale = 1, BlackWhite, Invert, Merge, Flip, Rotate,
-    Exposure, Crop, Frame, Edges, Resize, Blur, Sunlight,
-    OilPainting, OldTV, Quit = 16
+    GrayScale = 1,
+    BlackWhite,
+    Invert,
+    Merge,
+    Flip,
+    Rotate,
+    Exposure,
+    Crop,
+    Frame,
+    Edges,
+    Resize,
+    Blur,
+    Sunlight,
+    OilPainting,
+    OldTV,
+    Quit = 16
 };
 
 namespace FilterConstants
@@ -40,7 +53,8 @@ namespace PromptHandlers
         std::string cropFilterWidth_Arg(size_t, size_t);
     }
 
-    struct FilterParams {
+    struct FilterParams
+    {
         int resize_or_not;
         int horizontal_or_vertical;
         int rotation_angle;
@@ -54,9 +68,9 @@ namespace PromptHandlers
 class UI
 {
 public:
-    Photo *inputPhoto1 {nullptr};
-    Photo *inputPhoto2 {nullptr};
-    Photo *outputPhoto {nullptr};
+    Photo *inputPhoto1{nullptr};
+    Photo *inputPhoto2{nullptr};
+    Photo *outputPhoto{nullptr};
     std::string img1_fileName{};
     std::string img2_fileName{};
 

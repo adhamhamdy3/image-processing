@@ -5,14 +5,17 @@
 #include "Image.h"
 #include <unordered_map>
 
-enum class H_V : uint8_t
+enum class H_V : U8
 {
-    H = 1, V
+    H = 1,
+    V
 };
 
-enum class ANGLE : int
+enum class ANGLE : U16
 {
-    RIGHT = 90, STRAIGHT = 180, OBTUSE = 270
+    RIGHT = 90,
+    STRAIGHT = 180,
+    OBTUSE = 270
 };
 
 namespace Filters
@@ -20,22 +23,19 @@ namespace Filters
     void grayScale(Image *inputImage);
     void Black_White(Image *inputImage);
     void invert(Image *inputImage);
-    void merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not);
-
-    void flip(Image *inputImage, int horizontal_or_vertical);
-    void rotate(Image *inputImage, int rotationAngle);
+    void merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not); // TODO check if u can remove output
+    void flip(Image *inputImage, U8 horizontal_or_vertical);
+    void rotate(Image *inputImage, U16 rotationAngle);
     void exposure(Image &inputImage, Image &outputImage, bool lighten);
-    void crop(Image &inputImage, Image &outputImage, int vertexRow_Num, int vertexCol_Num);
-    void frame(Image &inputImage, Image &outputImage, int fancy, int color, const std::unordered_map <int,
-               std::vector <int>>& color_to_rgb);
+    void crop(Image &inputImage, Image &outputImage, size_t vertexRow_Num, size_t vertexCol_Num);
+    void frame(Image &inputImage, Image &outputImage, int fancy, int color, const std::unordered_map<int, std::vector<int>> &color_to_rgb);
 
     void edges(Image &inputImage, Image &outputImage);
-    Image& resize(Image &inputImage, Image &outputImage);
+    Image &resize(Image &inputImage, Image &outputImage);
     void blur(Image &inputImage, Image &outputImage, int blurRadius, int call_Num);
     void sunlight(Image &inputImage, Image &outputImage);
     void oilPainting(Image &inputImage, Image &outputImage);
     void oldTV(Image &inputImage, Image &outputImage);
 };
-
 
 #endif //_FILTERS_H

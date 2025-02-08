@@ -4,7 +4,8 @@
 #include "Image.h"
 #include <vector>
 
-class Photo {
+class Photo
+{
 public:
     Image *currentImage{nullptr};
 
@@ -20,9 +21,8 @@ public:
 
 private:
     Image *m_originalImage{nullptr};
-    std::vector<Image*> m_undoStack{};
+    std::vector<Image *> m_undoStack{};
     int m_undoSlider{};
 };
-
 
 #endif //_PHOTO_H

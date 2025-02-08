@@ -2,7 +2,8 @@
 
 void Photo::reset()
 {
-    if(!canUndo()) return;
+    if (!canUndo())
+        return;
 
     delete currentImage;
     currentImage = m_originalImage;
@@ -21,12 +22,12 @@ bool Photo::canRedo() const
 
 void Photo::pushChanges()
 {
-    if (*currentImage == *m_originalImage) return;
+    if (*currentImage == *m_originalImage)
+        return;
 
     m_undoStack.push_back(currentImage);
     ++m_undoSlider;
 }
-
 
 Photo::Photo(Image *originalIMG)
 {
@@ -40,7 +41,8 @@ Photo::Photo(Image *originalIMG)
 
 void Photo::undo()
 {
-    if(!canUndo()) return;
+    if (!canUndo())
+        return;
 
     this->currentImage = m_undoStack[--m_undoSlider];
 }
@@ -52,17 +54,22 @@ Photo::~Photo()
 
 void Photo::redo()
 {
-    if (!canRedo()) return;
+    if (!canRedo())
+        return;
 
     currentImage = m_undoStack[++m_undoSlider];
 }
 
 void Photo::cleanUp()
 {
-    if (m_originalImage) delete m_originalImage;
-    if (currentImage) delete currentImage;
+    if (m_originalImage)
+        delete m_originalImage;
+    if (currentImage)
+        delete currentImage;
 
-    for (size_t i = 0; i < m_undoStack.size(); ++i) {
-        if (m_undoStack[i]) delete m_undoStack[i];
+    for (size_t i = 0; i < m_undoStack.size(); ++i)
+    {
+        if (m_undoStack[i])
+            delete m_undoStack[i];
     }
 }
