@@ -25,12 +25,12 @@ const std::string PromptHandlers::ConstantPrompts::img2_Prompt = "Please enter t
                                                                  ".jpg, .png, .bmp, .tga): ";
 
 // Filters Prompts
-const std::string PromptHandlers::ConstantPrompts::mergeFilterArg = "Choose whether to crop and merge the common part of"
+const std::string PromptHandlers::ConstantPrompts::mergeFilterArg = "Choose whether to Crop and Merge the common part of"
                                                                     " the images" +
-                                                                    std::string("\n") + "or resize them to"
+                                                                    std::string("\n") + "or Resize them to"
                                                                                         " the same size (0: Crop, 1: Resize): ";
 
-const std::string PromptHandlers::ConstantPrompts::flipFilterArg = "Choose whether to flip the image (1: Horizontally, "
+const std::string PromptHandlers::ConstantPrompts::flipFilterArg = "Choose whether to Flip the image (1: Horizontally, "
                                                                    "2: Vertically): ";
 
 const std::string PromptHandlers::ConstantPrompts::rotateFilterArg = "Choose a CLOCKWISE rotation angle (90/180/270): ";
@@ -58,7 +58,7 @@ std::string PromptHandlers::ConstantPrompts::cropFilterWidth_Arg(size_t imgW, si
     return {"Choose the width of the cropped image (1-" + std::to_string(imgW - (vertexCN)) + ") : "};
 }
 
-const std::string PromptHandlers::ConstantPrompts::frameFilterArg = "Choose whether to apply a simple or fancy frame "
+const std::string PromptHandlers::ConstantPrompts::frameFilterArg = "Choose whether to apply a simple or fancy Frame "
                                                                     "(0 for simple, 1 for fancy): ";
 
 const std::string PromptHandlers::ConstantPrompts::frameFilterColorArg = "Available Colors: \n"
@@ -76,7 +76,7 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
     switch (choice)
     {
     case FilterOption::GrayScale:
-        Filters::grayScale(input1->currentImage);
+        Filters::Grayscale(input1->currentImage);
         input1->pushChanges();
         break;
     case FilterOption::BlackWhite:
@@ -84,19 +84,19 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
         input1->pushChanges();
         break;
     case FilterOption::Invert:
-        Filters::invert(input1->currentImage);
+        Filters::Invert(input1->currentImage);
         input1->pushChanges();
         break;
     case FilterOption::Merge:
-        Filters::merge(*input1->currentImage, *input2->currentImage, *output->currentImage, params.resize_or_not);
+        Filters::Merge(*input1->currentImage, *input2->currentImage, *output->currentImage, params.resize_or_not);
         // input1->pushChanges();
         break;
     case FilterOption::Flip:
-        Filters::flip(input1->currentImage, params.horizontal_or_vertical);
+        Filters::Flip(input1->currentImage, params.horizontal_or_vertical);
         input1->pushChanges();
         break;
     case FilterOption::Rotate:
-        Filters::rotate(input1->currentImage, params.rotation_angle);
+        Filters::Rotate(input1->currentImage, params.rotation_angle);
         input1->pushChanges();
         break;
     case FilterOption::Exposure:
@@ -104,34 +104,37 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
         input1->pushChanges();
         break;
     case FilterOption::Crop:
-        Filters::crop(input1->currentImage, params.vertex_row_no, params.vertex_col_no, params.crop_width, params.crop_height);
+        Filters::Crop(input1->currentImage, params.vertex_row_no, params.vertex_col_no, params.crop_width, params.crop_height);
         input1->pushChanges();
         break;
     case FilterOption::Frame:
-        Filters::frame(input1->currentImage, params.fancy, color, FilterConstants::FRAME_COLORS);
+        Filters::Frame(input1->currentImage, params.fancy, color, FilterConstants::FRAME_COLORS);
         input1->pushChanges();
         break;
     case FilterOption::Edges:
-        Filters::detectEdges(input1->currentImage);
+        Filters::DetectEdges(input1->currentImage);
         input1->pushChanges();
         break;
     case FilterOption::Resize:
-        Filters::resize(input1->currentImage, params.resize_width, params.resize_height);
+        Filters::Resize(input1->currentImage, params.resize_width, params.resize_height);
         break;
     case FilterOption::Blur:
     {
         float bR = Utilities::Validations::getBlurLevel();
-        Filters::blur(input1->currentImage, bR);
+        Filters::Blur(input1->currentImage, bR);
         break;
     }
     case FilterOption::Sunlight:
-        Filters::sunlight(*input1->currentImage, *output->currentImage);
+        Filters::Sunlight(input1->currentImage);
+        input1->pushChanges();
         break;
     case FilterOption::OilPainting:
-        Filters::oilPainting(*input1->currentImage, *output->currentImage);
+        Filters::OilPainting(input1->currentImage);
+        input1->pushChanges();
         break;
     case FilterOption::OldTV:
-        Filters::oldTV(*input1->currentImage, *output->currentImage);
+        Filters::OldTV(input1->currentImage);
+        input1->pushChanges();
         break;
     }
 }

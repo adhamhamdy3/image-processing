@@ -150,9 +150,9 @@ bool Utilities::Validations::v_inRectFrame(int i, int j, int centerRow, int cent
          (halfOfOuter_W - thickness <= abs(centerColumn - j) && abs(centerColumn - j) <= halfOfOuter_W)) &&
         ((i < allowed_area_height)) && ((j < allowed_area_width)))
     {
-        return true; // Point is within the rectangular frame
+        return true; // Point is within the rectangular Frame
     }
-    return false; // Point is outside the rectangular frame
+    return false; // Point is outside the rectangular Frame
 }
 
 float Utilities::radialDistance(size_t i_1, size_t j_1, float i_2, float j_2)
@@ -182,7 +182,7 @@ U8 Utilities::Validations::getBlurLevel()
 
     while (true) {
         std::cout << "\n=== Blur Level Selection ===\n";
-        std::cout << "Enter blur strength (1-5):\n";
+        std::cout << "Enter Blur strength (1-5):\n";
         std::cout << "1 - Subtle\n";
         std::cout << "2 - Mild\n";
         std::cout << "3 - Moderate\n";

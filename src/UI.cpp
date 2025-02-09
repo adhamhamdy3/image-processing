@@ -105,12 +105,12 @@ void UI::Run()
             break;
         }
         case FilterOption::Crop:
-            // Set output dimensions for crop filter
+            // Set output dimensions for Crop filter
             outputHeight = params.crop_height;
             outputWidth = params.crop_width;
             break;
         case FilterOption::Resize:
-            // Set output dimensions for resize filter
+            // Set output dimensions for Resize filter
             outputHeight = params.resize_height;
             outputWidth = params.resize_width;
             break;
@@ -131,7 +131,7 @@ void UI::Run()
 
         cout << endl;
         // Save the output image
-        // TODO export outputImg if merge
+        // TODO export outputImg if Merge
         Utilities::exportIMG(*inputPhoto1->currentImage);
         cout << endl
              << "---------------------------------------------------------------------------------------------------------"

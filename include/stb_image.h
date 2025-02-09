@@ -85,7 +85,7 @@ RECENT REVISION HISTORY:
     Jonathan Dummer (tga)                  James "moose2000" Brown (iPhone PNG)
     Jean-Marc Lienher (gif)                Ben "Disch" Wenger (io callbacks)
     Tom Seddon (pic)                       Omar Cornut (1/2/4-bit PNG)
-    Thatcher Ulrich (psd)                  Nicolas Guillemot (vertical flip)
+    Thatcher Ulrich (psd)                  Nicolas Guillemot (vertical Flip)
     Ken Miller (pgm, ppm)                  Richard Mitton (16-bit PSD)
     github:urraka (animated gif)           Junggon Kim (PNM comments)
     Christopher Forseth (animated gif)     Daniel Gibson (16-bit TGA)
@@ -122,7 +122,7 @@ RECENT REVISION HISTORY:
                      Jacko Dirks
 
   To add your name to the credits, pick a random blank space in the middle and fill it.
-  80% of merge conflicts on stb PRs are due to people adding their name at the end
+  80% of Merge conflicts on stb PRs are due to people adding their name at the end
   of the credits.
 */
 
@@ -287,7 +287,7 @@ RECENT REVISION HISTORY:
 //     stbi_hdr_to_ldr_gamma(2.2f);
 //     stbi_hdr_to_ldr_scale(1.0f);
 //
-// (note, do not use _inverse_ constants; stbi_image will invert them
+// (note, do not use _inverse_ constants; stbi_image will Invert them
 // appropriately).
 //
 // Additionally, there is a new, parallel interface for loading files as
@@ -514,7 +514,7 @@ STBIDEF void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultipl
 // or just pass them through "as-is"
 STBIDEF void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert);
 
-// flip the image vertically, so the first pixel in the output array is the bottom left
+// Flip the image vertically, so the first pixel in the output array is the bottom left
 STBIDEF void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip);
 
 // as above, but only applies to images loaded on the thread that calls the function
@@ -2223,7 +2223,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
    if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta","Corrupt JPEG");
    dc = j->img_comp[b].dc_pred + diff;
    j->img_comp[b].dc_pred = dc;
-   if (!stbi__mul2shorts_valid(dc, dequant[0])) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+   if (!stbi__mul2shorts_valid(dc, dequant[0])) return stbi__err("can't Merge dc and ac", "Corrupt JPEG");
    data[0] = (short) (dc * dequant[0]);
 
    // decode AC components, see JPEG spec
@@ -2266,7 +2266,7 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
 {
    int diff,dc;
    int t;
-   if (j->spec_end != 0) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+   if (j->spec_end != 0) return stbi__err("can't Merge dc and ac", "Corrupt JPEG");
 
    if (j->code_bits < 16) stbi__grow_buffer_unsafe(j);
 
@@ -2274,13 +2274,13 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
       // first scan for DC coefficient, must be first
       memset(data,0,64*sizeof(data[0])); // 0 all the ac values now
       t = stbi__jpeg_huff_decode(j, hdc);
-      if (t < 0 || t > 15) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+      if (t < 0 || t > 15) return stbi__err("can't Merge dc and ac", "Corrupt JPEG");
       diff = t ? stbi__extend_receive(j, t) : 0;
 
       if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta", "Corrupt JPEG");
       dc = j->img_comp[b].dc_pred + diff;
       j->img_comp[b].dc_pred = dc;
-      if (!stbi__mul2shorts_valid(dc, 1 << j->succ_low)) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+      if (!stbi__mul2shorts_valid(dc, 1 << j->succ_low)) return stbi__err("can't Merge dc and ac", "Corrupt JPEG");
       data[0] = (short) (dc * (1 << j->succ_low));
    } else {
       // refinement scan for DC coefficient
@@ -2295,7 +2295,7 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
 static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__huffman *hac, stbi__int16 *fac)
 {
    int k;
-   if (j->spec_start == 0) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
+   if (j->spec_start == 0) return stbi__err("can't Merge dc and ac", "Corrupt JPEG");
 
    if (j->succ_high == 0) {
       int shift = j->succ_low;
@@ -3899,7 +3899,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
       for (k=0; k < decode_n; ++k) {
          stbi__resample *r = &res_comp[k];
 
-         // allocate line buffer big enough for upsampling off the detectEdges
+         // allocate line buffer big enough for upsampling off the DetectEdges
          // with upsample factor of 4
          z->img_comp[k].linebuf = (stbi_uc *) stbi__malloc(z->s->img_x + 3);
          if (!z->img_comp[k].linebuf) { stbi__cleanup_jpeg(z); return stbi__errpuc("outofmem", "Out of memory"); }
@@ -4788,7 +4788,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
 
       // expand decoded bits in cur to dest, also adding an extra alpha channel if desired
       if (depth < 8) {
-         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayScale values to 0..255 range
+         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale Grayscale values to 0..255 range
          stbi_uc *in = cur;
          stbi_uc *out = dest;
          stbi_uc inb = 0;
@@ -6023,7 +6023,7 @@ static void *stbi__tga_load(stbi__context *s, int *x, int *y, int *comp, int req
          //   in case we're in RLE mode, keep counting down
          --RLE_count;
       }
-      //   do I need to invert the image?
+      //   do I need to Invert the image?
       if ( tga_inverted )
       {
          for (j = 0; j*2 < tga_height; ++j)
@@ -6783,7 +6783,7 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
    int pcount;
    STBI_NOTUSED(req_comp);
 
-   // on first frame, any non-written pixels get the background colour (non-transparent)
+   // on first Frame, any non-written pixels get the background colour (non-transparent)
    first_frame = 0;
    if (g->out == 0) {
       if (!stbi__gif_header(s, g, comp,0)) return 0; // stbi__g_failure_reason set by stbi__gif_header
@@ -6797,14 +6797,14 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
          return stbi__errpuc("outofmem", "Out of memory");
 
       // image is treated as "transparent" at the start - ie, nothing overwrites the current background;
-      // background colour is only used for pixels that are not rendered first frame, after that "background"
-      // color refers to the color that was there the previous frame.
+      // background colour is only used for pixels that are not rendered first Frame, after that "background"
+      // color refers to the color that was there the previous Frame.
       memset(g->out, 0x00, 4 * pcount);
       memset(g->background, 0x00, 4 * pcount); // state of the background (starts transparent)
-      memset(g->history, 0x00, pcount);        // pixels that were affected previous frame
+      memset(g->history, 0x00, pcount);        // pixels that were affected previous Frame
       first_frame = 1;
    } else {
-      // second frame - how do we dispose of the previous one?
+      // second Frame - how do we dispose of the previous one?
       dispose = (g->eflags & 0x1C) >> 2;
       pcount = g->w * g->h;
 
@@ -6819,7 +6819,7 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
             }
          }
       } else if (dispose == 2) {
-         // restore what was changed last frame to background before that frame;
+         // restore what was changed last frame to background before that Frame;
          for (pi = 0; pi < pcount; ++pi) {
             if (g->history[pi]) {
                memcpy( &g->out[pi * 4], &g->background[pi * 4], 4 );
@@ -6832,12 +6832,12 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
          // 0:  not specified.
       }
 
-      // background is what out is after the undoing of the previou frame;
+      // background is what out is after the undoing of the previou Frame;
       memcpy( g->background, g->out, 4 * g->w * g->h );
    }
 
    // clear my history;
-   memset( g->history, 0x00, g->w * g->h );        // pixels that were affected previous frame
+   memset( g->history, 0x00, g->w * g->h );        // pixels that were affected previous Frame
 
    for (;;) {
       int tag = stbi__get8(s);
@@ -6890,13 +6890,13 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
             o = stbi__process_gif_raster(s, g);
             if (!o) return NULL;
 
-            // if this was the first frame,
+            // if this was the first Frame,
             pcount = g->w * g->h;
             if (first_frame && (g->bgindex > 0)) {
-               // if first frame, any pixel not drawn to gets the background color
+               // if first Frame, any pixel not drawn to gets the background color
                for (pi = 0; pi < pcount; ++pi) {
                   if (g->history[pi] == 0) {
-                     g->pal[g->bgindex][3] = 255; // just in case it was made transparent, undo that; It will be reset next frame if need be;
+                     g->pal[g->bgindex][3] = 255; // just in case it was made transparent, undo that; It will be reset next Frame if need be;
                      memcpy( &g->out[pi * 4], &g->pal[g->bgindex], 4 );
                   }
                }
@@ -7067,7 +7067,7 @@ static void *stbi__gif_load(stbi__context *s, int *x, int *y, int *comp, int req
       STBI_FREE(g.out);
    }
 
-   // free buffers needed for multiple frame loading;
+   // free buffers needed for multiple Frame loading;
    STBI_FREE(g.history);
    STBI_FREE(g.background);
 
@@ -7774,7 +7774,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
                          STBI_NO_STDIO works again;
                          compilation fixes;
                          fix rounding in unpremultiply;
-                         optimize vertical flip;
+                         optimize vertical Flip;
                          disable raw_len validation;
                          documentation fixes
       2.15  (2017-03-18) fix png-1,2,4 bug; now all Imagenet JPGs decode;
@@ -7930,7 +7930,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       0.90    fix a few more warnings; bump version number to approach 1.0
       0.61    bugfixes due to Marc LeBlanc, Christopher Lloyd
       0.60    fix compiling as c++
-      0.59    fix warnings: merge Dave Moore's -Wall fixes
+      0.59    fix warnings: Merge Dave Moore's -Wall fixes
       0.58    fix bug: zlib uncompressed mode len/nlen was wrong endian
       0.57    fix bug: jpg last huffman symbol before marker was >9 bits but less than 16 available
       0.56    fix bug: zlib uncompressed mode len vs. nlen
@@ -7954,7 +7954,7 @@ Copyright (c) 2017 Sean Barrett
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+use, copy, modify, Merge, publish, distribute, sublicense, and/or sell copies
 of the Software, and to permit persons to whom the Software is furnished to do
 so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all

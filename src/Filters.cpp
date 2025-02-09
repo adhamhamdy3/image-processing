@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void Filters::grayScale(Image *inputImage)
+void Filters::Grayscale(Image *inputImage)
 {
     for (size_t i = 0; i < inputImage->width; i++) // Loop through each pixel in width
     {
@@ -10,7 +10,7 @@ void Filters::grayScale(Image *inputImage)
 
         for (size_t j = 0; j < inputImage->height; j++) // Loop through each pixel in height
         {
-            U16 avg = 0;               // Initialize average value for grayScale calculation
+            U16 avg = 0;               // Initialize average value for Grayscale calculation
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
                 avg += inputImage->getPixel(i, j, k); // Sum RGB values
@@ -53,7 +53,7 @@ void Filters::Black_White(Image *inputImage)
     }
 }
 
-void Filters::invert(Image *inputImage)
+void Filters::Invert(Image *inputImage)
 {
     for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
     {
@@ -70,7 +70,7 @@ void Filters::invert(Image *inputImage)
     }
 }
 
-void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
+void Filters::Merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
 {
     if (!resize_or_not)
     {
@@ -96,10 +96,10 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
 
         // Resize copies to match output dimensions
         std::cout << "--------------------------\nResizing first image...\n";
-        resize(&image1_resized, outputImage.width, outputImage.height);
+        Resize(&image1_resized, outputImage.width, outputImage.height);
 
         std::cout << "\nResizing second image...\n";
-        resize(&image2_resized, outputImage.width, outputImage.height);
+        Resize(&image2_resized, outputImage.width, outputImage.height);
 
         // Merge resized copies
         std::cout << "\nMerging...\n";
@@ -118,14 +118,14 @@ void Filters::merge(Image &inputImage1, Image &inputImage2, Image &outputImage, 
     }
 }
 
-void Filters::flip(Image *inputImage, U8 horizontal_or_vertical)
+void Filters::Flip(Image *inputImage, U8 horizontal_or_vertical)
 {
     H_V choice = static_cast<H_V>(horizontal_or_vertical);
     Image tempImage(*inputImage); // Temporary image for safe modification
 
     switch (choice)
     {
-    case H_V::H: // Horizontal flip
+    case H_V::H: // Horizontal Flip
     {
         const int width = static_cast<int>(inputImage->width);
         for (int x = 0; x < width; x++)
@@ -143,7 +143,7 @@ void Filters::flip(Image *inputImage, U8 horizontal_or_vertical)
         }
         break;
     }
-    case H_V::V: // Vertical flip
+    case H_V::V: // Vertical Flip
     {
         const int height = static_cast<int>(inputImage->height);
         for (size_t x = 0; x < inputImage->width; x++)
@@ -166,7 +166,7 @@ void Filters::flip(Image *inputImage, U8 horizontal_or_vertical)
     *inputImage = tempImage; // Apply final result
 }
 
-void Filters::rotate(Image *inputImage, U16 rotationAngle)
+void Filters::Rotate(Image *inputImage, U16 rotationAngle)
 {
     ANGLE rAngle = (ANGLE)rotationAngle;
 
@@ -272,7 +272,7 @@ void Filters::exposure(Image *inputImage, bool lighten)
     }
 }
 
-void Filters::crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height)
+void Filters::Crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height)
 {
     Image croppedImage(width, height);
     for (size_t i = vertexRow_Num; i < vertexRow_Num + width; i++)
@@ -292,12 +292,12 @@ void Filters::crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num
     inputImage->height = height;
 }
 
-void Filters::frame(Image *inputImage, int fancy, int color,
-                    const unordered_map<U8, vector<U16>> &color_to_rgb)
+void Filters::Frame(Image *inputImage, int fancy, int color,
+                    const std::unordered_map<U8, std::vector<U16>> &color_to_rgb)
 {
-    size_t cornerSize = min(inputImage->height, inputImage->width) / 20; // Calculate corner size for the frame
+    size_t cornerSize = min(inputImage->height, inputImage->width) / 20; // Calculate corner size for the Frame
 
-    if (fancy) // Apply fancy frame
+    if (fancy) // Apply fancy Frame
     {
         // Fancy Design
         for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
@@ -309,7 +309,7 @@ void Filters::frame(Image *inputImage, int fancy, int color,
                 size_t equivalent_i = (i < inputImage->height / 2 ? i : inputImage->height - i - 1);
                 size_t equivalent_j = (j < inputImage->width / 2 ? j : inputImage->width - j - 1);
 
-                // Calculate radial distances for different frame components
+                // Calculate radial distances for different Frame components
                 float dist_1 = Utilities::radialDistance(equivalent_i, equivalent_j, (0.4f) * cornerSize,
                                                          (1.775f) *
                                                              cornerSize);
@@ -319,7 +319,7 @@ void Filters::frame(Image *inputImage, int fancy, int color,
                                                              cornerSize,
                                                          (0.4f) * cornerSize);
 
-                // Apply frame color based on radial distance and rectangular frames
+                // Apply Frame color based on radial distance and rectangular frames
                 if (((0.22f) * cornerSize < dist_1 && dist_1 < 0.3f * cornerSize) ||
                     ((0.22f) * cornerSize < dist_2 && dist_2 < 0.3f * cornerSize))
                 {
@@ -338,7 +338,7 @@ void Filters::frame(Image *inputImage, int fancy, int color,
                 else
                 {
                     for (U8 k = 0; k < 3; k++)
-                        inputImage->setPixel(j, i, k, inputImage->getPixel(j, i, k)); // Copy original pixel if not in frame
+                        inputImage->setPixel(j, i, k, inputImage->getPixel(j, i, k)); // Copy original pixel if not in Frame
                 }
             }
         }
@@ -364,7 +364,7 @@ void Filters::frame(Image *inputImage, int fancy, int color,
                 // Threshold as integer to match type
                 int threshold = static_cast<int>(0.3f * cornerSize);
 
-                // Check if pixel is outside the frame boundary
+                // Check if pixel is outside the Frame boundary
                 if (di > (center_i - threshold) || dj > (center_j - threshold))
                 {
                     for (U8 k = 0; k < 3; k++)
@@ -377,7 +377,7 @@ void Filters::frame(Image *inputImage, int fancy, int color,
     }
 }
 
-void Filters::detectEdges(Image *inputImage)
+void Filters::DetectEdges(Image *inputImage)
 {
     Image outputImage(inputImage->width, inputImage->height);
 
@@ -414,7 +414,7 @@ void Filters::detectEdges(Image *inputImage)
     swap(inputImage->imageData, outputImage.imageData);
 }
 
-Image &Filters::resize(Image *inputImage, size_t targetWidth, size_t targetHeight)
+Image &Filters::Resize(Image *inputImage, size_t targetWidth, size_t targetHeight)
 {
     // Create temporary image for result
     Image result(targetWidth, targetHeight);
@@ -430,11 +430,11 @@ Image &Filters::resize(Image *inputImage, size_t targetWidth, size_t targetHeigh
         for (size_t dstX = 0; dstX < targetWidth; ++dstX)
         {
             // Calculate source coordinates with clamping
-            const int srcX = Utilities::Validations::clamp(
+            const int srcX = std::clamp(
                 static_cast<int>(dstX * widthRatio),
                 0,
                 static_cast<int>(inputImage->width) - 1);
-            const int srcY = Utilities::Validations::clamp(
+            const int srcY = std::clamp(
                 static_cast<int>(dstY * heightRatio),
                 0,
                 static_cast<int>(inputImage->height) - 1);
@@ -457,11 +457,11 @@ Image &Filters::resize(Image *inputImage, size_t targetWidth, size_t targetHeigh
     return *inputImage;
 }
 
-void Filters::blur(Image* inputImage, U8 level) {
+void Filters::Blur(Image* inputImage, U8 blurLevel) {
     const int width = inputImage->width;
     const int height = inputImage->height;
     const int channels = inputImage->channels;
-    const int radius = Utilities::Validations::clamp(static_cast<int>(level), 1, 15);  // Limit maximum radius
+    const int radius = std::clamp(static_cast<int>(blurLevel), 1, 15);  // Limit maximum radius
 
     Image tempImage(width, height);
 
@@ -482,7 +482,7 @@ void Filters::blur(Image* inputImage, U8 level) {
         }
     }
 
-    // Apply blur using integral images
+    // Apply Blur using integral images
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             const int x1 = std::max(0, x - radius);
@@ -506,35 +506,39 @@ void Filters::blur(Image* inputImage, U8 level) {
     std::swap(inputImage->imageData, tempImage.imageData);
 }
 
-void Filters::sunlight(Image &inputImage, Image &outputImage)
+void Filters::Sunlight(Image *inputImage)
 {
-    // Apply sunlight effect by reducing intensity of blue channel
-    for (int i = 0; i < inputImage.width; ++i)
+    Image outputImage(inputImage->width, inputImage->height);
+    // Apply Sunlight effect by reducing intensity of blue channel
+    for (size_t i = 0; i < inputImage->width; ++i)
     {
-        Utilities::displayProgressBar(i, inputImage.width - 1);
-        for (int j = 0; j < inputImage.height; ++j)
+        Utilities::displayProgressBar(i, inputImage->width - 1);
+        for (size_t j = 0; j < inputImage->height; ++j)
         {
             // Keep red and green channels unchanged, reduce blue channel intensity
-            outputImage(i, j, 0) = inputImage(i, j, 0);
-            outputImage(i, j, 1) = inputImage(i, j, 1);
-            outputImage(i, j, 2) = inputImage(i, j, 2) - inputImage(i, j, 2) / 4;
+            outputImage(i, j, 0) = inputImage->getPixel(i, j, 0);
+            outputImage(i, j, 1) = inputImage->getPixel(i, j, 1);
+            outputImage(i, j, 2) = inputImage->getPixel(i, j, 2) - inputImage->getPixel(i, j, 2) / 4;
         }
     }
+
+    std::swap(inputImage->imageData, outputImage.imageData);
 }
 
-void Filters::oilPainting(Image &inputImage, Image &outputImage)
+void Filters::OilPainting(Image *inputImage)
 {
+    Image outputImage(inputImage->width, inputImage->height);
     // Apply oil painting effect based on intensity levels and neighborhood pixels
-    U8 RADIUS = min(5, (((inputImage.height * inputImage.width) / 36000) * 2));
+    U8 RADIUS = min(5, (((inputImage->height * inputImage->width) / 36000) * 2));
     if (RADIUS < 2)
         RADIUS = 2;
 
     const U8 LEVEL_SIZE = 2;
 
-    for (int i = 0; i < inputImage.height; i++)
+    for (int i = 0; i < inputImage->height; i++)
     {
-        Utilities::displayProgressBar(i, inputImage.height - 1);
-        for (int j = 0; j < inputImage.width; j++)
+        Utilities::displayProgressBar(i, inputImage->height - 1);
+        for (int j = 0; j < inputImage->width; j++)
         {
             vector<int> intensity_count(LEVEL_SIZE + 1, 0);
             vector<vector<int>> color_sums(LEVEL_SIZE + 1, vector<int>(3, 0));
@@ -544,16 +548,13 @@ void Filters::oilPainting(Image &inputImage, Image &outputImage)
             {
                 for (int n = j - RADIUS; n <= j + RADIUS; n++)
                 {
-                    if (m < 0 || n < 0 || m >= inputImage.height || n >= inputImage.width)
+                    if (m < 0 || n < 0 || m >= inputImage->height || n >= inputImage->width)
                         continue;
 
-                    int current_intensity = ((inputImage(n, m, 0) + inputImage(n, m, 1) +
-                                              inputImage(n, m, 2)) /
-                                             (255.0 * 3.0)) *
-                                            LEVEL_SIZE;
+                    int current_intensity = ((inputImage->getPixel(n, m, 0) + inputImage->getPixel(n, m, 1) + inputImage->getPixel(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
                     intensity_count[current_intensity]++;
                     for (U8 k = 0; k < 3; k++)
-                        color_sums[current_intensity][k] += inputImage(n, m, k);
+                        color_sums[current_intensity][k] += inputImage->getPixel(n, m, k);
                 }
             }
 
@@ -561,51 +562,53 @@ void Filters::oilPainting(Image &inputImage, Image &outputImage)
 
             // Assign pixel color based on dominant intensity level in neighborhood
             for (U8 k = 0; k < 3; k++)
-                outputImage(j, i, k) = color_sums[max_index -
-                                                  intensity_count.begin()][k] /
-                                       *max_index;
+                outputImage(j, i, k) = color_sums[max_index - intensity_count.begin()][k] / *max_index;
         }
     }
+
+    std::swap(inputImage->imageData, outputImage.imageData);
 }
 
-void Filters::oldTV(Image &inputImage, Image &outputImage)
+void Filters::OldTV(Image *inputImage)
 {
+    Image outputImage(inputImage->width, inputImage->height);
     // Initialize random number generator for noise
     random_device rd;
     mt19937 gen(rd());
     normal_distribution<> distribution(0, 25);
 
     // Calculate total thickness of noise lines based on image size
-    int total_thickness = inputImage.height / 30;
-    if (min(inputImage.height, inputImage.width) < 500)
+    int total_thickness = inputImage->height / 30;
+    if (min(inputImage->height, inputImage->width) < 500)
         total_thickness *= 3;
-    else if (min(inputImage.height, inputImage.width) < 1000)
+    else if (min(inputImage->height, inputImage->width) < 1000)
         total_thickness *= 2;
 
-    for (int i = 0; i < inputImage.height; i++)
+    for (int i = 0; i < inputImage->height; i++)
     {
-        Utilities::displayProgressBar(i, inputImage.height - 1);
-        for (int j = 0; j < inputImage.width; j++)
+        Utilities::displayProgressBar(i, inputImage->height - 1);
+        for (int j = 0; j < inputImage->width; j++)
         {
             double noise = distribution(gen); // Generate random noise value
 
             // Apply noise with different intensities based on line thickness
             if ((i % total_thickness) < total_thickness * 0.65)
             {
-                for (U8 k = 0; k < inputImage.channels; k++)
+                for (U8 k = 0; k < inputImage->channels; k++)
                 {
-                    double pixel_value = inputImage(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);    // Add noise and adjust blue channel
-                    outputImage(j, i, k) = Utilities::Validations::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
+                    double pixel_value = inputImage->getPixel(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);    // Add noise and adjust blue channel
+                    outputImage(j, i, k) = std::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
                 }
             }
             else
             {
-                for (U8 k = 0; k < inputImage.channels; k++)
+                for (U8 k = 0; k < inputImage->channels; k++)
                 {
-                    double pixel_value = inputImage(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);     // Add noise with different intensity
-                    outputImage(j, i, k) = Utilities::Validations::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
+                    double pixel_value = inputImage->getPixel(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);     // Add noise with different intensity
+                    outputImage(j, i, k) = std::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
                 }
             }
         }
     }
+    std::swap(inputImage->imageData, outputImage.imageData);
 }
