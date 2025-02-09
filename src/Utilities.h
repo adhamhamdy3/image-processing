@@ -27,6 +27,8 @@ namespace Utilities
         std::string v_ImgName(const std::string &prompt, bool existing = false);
         bool v_inRectFrame(int i, int j, int centerRow, int centerColumn, int halfOfOuter_H,
                            int halfOfOuter_W, int thickness);
+
+        U8 getBlurLevel();
     }
 
     void displayProgressBar(size_t currentIndex, size_t maxIndex, const std::string &optionalTitle = "");

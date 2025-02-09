@@ -32,7 +32,7 @@ namespace Filters
 
     void detectEdges(Image *inputImage);
     Image &resize(Image *inputImage, size_t w, size_t h);
-    void blur(Image *inputImage, int blurRadius, U8 call_Num);
+    void blur(Image *inputImage,U8 blurLevel);
     void sunlight(Image &inputImage, Image &outputImage);
     void oilPainting(Image &inputImage, Image &outputImage);
     void oldTV(Image &inputImage, Image &outputImage);

@@ -430,11 +430,11 @@ Image &Filters::resize(Image *inputImage, size_t targetWidth, size_t targetHeigh
         for (size_t dstX = 0; dstX < targetWidth; ++dstX)
         {
             // Calculate source coordinates with clamping
-            const int srcX = std::clamp(
+            const int srcX = Utilities::Validations::clamp(
                 static_cast<int>(dstX * widthRatio),
                 0,
                 static_cast<int>(inputImage->width) - 1);
-            const int srcY = std::clamp(
+            const int srcY = Utilities::Validations::clamp(
                 static_cast<int>(dstY * heightRatio),
                 0,
                 static_cast<int>(inputImage->height) - 1);
@@ -457,89 +457,53 @@ Image &Filters::resize(Image *inputImage, size_t targetWidth, size_t targetHeigh
     return *inputImage;
 }
 
-void Filters::blur(Image *inputImage, int blurRadius, U8 call_Num)
-{
-    Image outputImage(inputImage->width, inputImage->height);
-    // Precompute blur box sums
-    vector<vector<vector<long long>>> blur_box_sums(inputImage->height,
-                                                    vector<vector<long long>>(inputImage->width,
-                                                                              vector<long long>(3, 0)));
-    for (size_t i = 0; i < inputImage->height; ++i)
-    {
+void Filters::blur(Image* inputImage, U8 level) {
+    const int width = inputImage->width;
+    const int height = inputImage->height;
+    const int channels = inputImage->channels;
+    const int radius = Utilities::Validations::clamp(static_cast<int>(level), 1, 15);  // Limit maximum radius
 
-        switch (call_Num)
-        {
-        case 1:
-        {
-            Utilities::displayProgressBar(0.25 * i, (inputImage->height - 1));
-            break;
-        }
-        case 2:
-        {
-            Utilities::displayProgressBar(0.25 * i + 0.5 * inputImage->height,
-                                          (inputImage->height - 1));
-            break;
-        }
-        }
+    Image tempImage(width, height);
 
-        for (size_t j = 0; j < inputImage->width; ++j)
-        {
-            for (U8 k = 0; k < 3; ++k)
-            {
-                blur_box_sums[i][j][k] = inputImage->getPixel(j, i, k);
-                if (i > 0)
-                    blur_box_sums[i][j][k] += blur_box_sums[i - 1][j][k];
-                if (j > 0)
-                    blur_box_sums[i][j][k] += blur_box_sums[i][j - 1][k];
-                if (i > 0 && j > 0)
-                    blur_box_sums[i][j][k] -= blur_box_sums[i - 1][j - 1][k];
+    // Create integral images for each channel
+    std::vector<std::vector<long long>> integrals(channels,
+                                                  std::vector<long long>(width * height, 0));
+
+    // Build integral images
+    for (int c = 0; c < channels; ++c) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                long long current = inputImage->getPixel(x, y, c);
+                if(x > 0) current += integrals[c][y*width + (x-1)];
+                if(y > 0) current += integrals[c][(y-1)*width + x];
+                if(x > 0 && y > 0) current -= integrals[c][(y-1)*width + (x-1)];
+                integrals[c][y*width + x] = current;
             }
         }
     }
 
-    // Blur the image
-    for (size_t i = 0; i < inputImage->height; ++i)
-    {
+    // Apply blur using integral images
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const int x1 = std::max(0, x - radius);
+            const int y1 = std::max(0, y - radius);
+            const int x2 = std::min(width-1, x + radius);
+            const int y2 = std::min(height-1, y + radius);
 
-        switch (call_Num)
-        {
-        case 1:
-        {
-            Utilities::displayProgressBar(0.25 * i + 0.25 * inputImage->height,
-                                          (inputImage->height - 1));
-            break;
-        }
-        case 2:
-        {
-            Utilities::displayProgressBar(float(0.25 * i) + float(0.75 * inputImage->height),
-                                          (inputImage->height - 1));
-            break;
-        }
-        }
+            const int area = (x2 - x1 + 1) * (y2 - y1 + 1);
 
-        for (int j = 0; j < inputImage->width; ++j)
-        {
-            int x_1 = max(0, j - blurRadius);
-            int y_1 = max(0, i - blurRadius);
-            int x_2 = min(inputImage->width - 1, j + blurRadius);
-            int y_2 = min(inputImage->height - 1, i + blurRadius);
+            for (int c = 0; c < channels; ++c) {
+                long long sum = integrals[c][y2*width + x2];
+                if(x1 > 0) sum -= integrals[c][y2*width + (x1-1)];
+                if(y1 > 0) sum -= integrals[c][(y1-1)*width + x2];
+                if(x1 > 0 && y1 > 0) sum += integrals[c][(y1-1)*width + (x1-1)];
 
-            int count = (x_2 - x_1 + 1) * (y_2 - y_1 + 1);
-
-            for (U8 k = 0; k < 3; ++k)
-            {
-                size_t sum = blur_box_sums[y_2][x_2][k];
-                if (x_1 > 0)
-                    sum -= blur_box_sums[y_2][x_1 - 1][k];
-                if (y_1 > 0)
-                    sum -= blur_box_sums[y_1 - 1][x_2][k];
-                if (x_1 > 0 && y_1 > 0)
-                    sum += blur_box_sums[y_1 - 1][x_1 - 1][k];
-                outputImage(j, i, k) = round(sum / float(count));
+                tempImage.setPixel(x, y, c, static_cast<U8>(sum / area));
             }
         }
     }
-    std::swap(inputImage->imageData, outputImage.imageData);
+
+    std::swap(inputImage->imageData, tempImage.imageData);
 }
 
 void Filters::sunlight(Image &inputImage, Image &outputImage)

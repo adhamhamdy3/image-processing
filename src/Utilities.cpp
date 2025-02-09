@@ -175,3 +175,40 @@ void Utilities::exportIMG(Image &outputImg)
          << "Saving.. " << endl;
     outputImg.saveImage(output_filename); // Save the image
 }
+
+U8 Utilities::Validations::getBlurLevel()
+{
+    int level = 3;  // Default value
+
+    while (true) {
+        std::cout << "\n=== Blur Level Selection ===\n";
+        std::cout << "Enter blur strength (1-5):\n";
+        std::cout << "1 - Subtle\n";
+        std::cout << "2 - Mild\n";
+        std::cout << "3 - Moderate\n";
+        std::cout << "4 - Strong\n";
+        std::cout << "5 - Maximum\n";
+        std::cout << "Your choice: ";
+
+        if (!(std::cin >> level)) {
+            // Handle non-integer input
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "\n⚠️ Invalid input! Please enter a number.\n";
+        }
+        else if (level < 1 || level > 5) {
+            // Handle out-of-range input
+            std::cout << "\n⚠️ Please enter a value between 1 and 5!\n";
+        }
+        else {
+            // Valid input received
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+    }
+
+    // Ensure value stays in range (double-check)
+    level = Utilities::Validations::clamp(level, 1, 5);
+
+    return static_cast<U8>(level);
+}

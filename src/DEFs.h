@@ -119,12 +119,11 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
         Filters::resize(input1->currentImage, params.resize_width, params.resize_height);
         break;
     case FilterOption::Blur:
-        Filters::blur(*input1->currentImage, *output->currentImage,
-                      sqrt((input1->currentImage->height * input1->currentImage->width)) / 160, 1);
-
-        Filters::blur(*output->currentImage, *output->currentImage,
-                      sqrt((input1->currentImage->height * input1->currentImage->width)) / 80, 2);
+    {
+        float bR = Utilities::Validations::getBlurLevel();
+        Filters::blur(input1->currentImage, bR);
         break;
+    }
     case FilterOption::Sunlight:
         Filters::sunlight(*input1->currentImage, *output->currentImage);
         break;
