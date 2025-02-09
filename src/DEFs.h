@@ -116,7 +116,7 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
         input1->pushChanges();
         break;
     case FilterOption::Resize:
-        Filters::resize(*input1->currentImage, *output->currentImage);
+        Filters::resize(input1->currentImage, params.resize_width, params.resize_height);
         break;
     case FilterOption::Blur:
         Filters::blur(*input1->currentImage, *output->currentImage,

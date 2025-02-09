@@ -31,8 +31,8 @@ namespace Filters
     void frame(Image *inputImage, int fancy, int color, const std::unordered_map<U8, std::vector<U16>> &color_to_rgb);
 
     void detectEdges(Image *inputImage);
-    Image &resize(Image &inputImage, Image &outputImage);
-    void blur(Image &inputImage, Image &outputImage, int blurRadius, int call_Num);
+    Image &resize(Image *inputImage, size_t w, size_t h);
+    void blur(Image *inputImage, int blurRadius, U8 call_Num);
     void sunlight(Image &inputImage, Image &outputImage);
     void oilPainting(Image &inputImage, Image &outputImage);
     void oldTV(Image &inputImage, Image &outputImage);
