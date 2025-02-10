@@ -2,42 +2,45 @@
 
 using namespace std;
 
-void Filters::Grayscale(Image *inputImage)
+void Filters::Grayscale(Photo *photo)
 {
-    for (size_t i = 0; i < inputImage->width; i++) // Loop through each pixel in width
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
+    for (size_t i = 0; i < width; i++)  // Loop through each pixel in width
     {
-        Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
-
-        for (size_t j = 0; j < inputImage->height; j++) // Loop through each pixel in height
+        Utilities::displayProgressBar(i, width - 1); // Display progress bar
+        for (size_t j = 0; j < height; j++) // Loop through each pixel in height
         {
-            U16 avg = 0;               // Initialize average value for Grayscale calculation
-            for (U8 k = 0; k < 3; k++) // Loop through RGB channels
+            U16 avg = 0;    // Initialize average value for Grayscale calculation
+            for (U8 k = 0; k < 3; k++)// Loop through RGB channels
             {
-                avg += inputImage->getPixel(i, j, k); // Sum RGB values
+                avg += photo->currentImage->getPixel(i, j, k); // Sum RGB values
             }
-            avg /= 3; // Calculate average RGB value
+            avg /= 3;   // Calculate average RGB value
 
-            for (U8 k = 0; k < 3; k++) // Assign average value to each RGB channel in output image
-            {
-                inputImage->setPixel(i, j, k, avg);
-            }
+            for (U8 k = 0; k < 3; k++)  // Assign average value to each RGB channel in output image
+                photo->currentImage->setPixel(i, j, k, avg);
         }
     }
+    photo->pushChanges();
 }
 
-void Filters::Black_White(Image *inputImage)
-{
-    for (size_t i = 0; i < inputImage->width; i++) // Loop through each pixel in width
-    {
-        Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
+void Filters::Black_White(Photo* photo){
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
 
-        for (size_t j = 0; j < inputImage->height; j++) // Loop through each pixel in height
+    for (size_t i = 0; i < width; i++) // Loop through each pixel in width
+    {
+        Utilities::displayProgressBar(i, width - 1); // Display progress bar
+
+        for (size_t j = 0; j < height; j++) // Loop through each pixel in height
         {
             U16 avg = 0; // Initialize average value for black and white calculation
 
-            for (U8 k = 0; k < inputImage->channels; k++) // Loop through channels
+            for (U8 k = 0; k < 3; k++) // Loop through channels
             {
-                avg += inputImage->getPixel(i, j, k); // Sum channel values
+                avg += photo->currentImage->getPixel(i, j, k); // Sum channel values
             }
 
             avg /= 3; // Calculate average value
@@ -47,97 +50,104 @@ void Filters::Black_White(Image *inputImage)
 
             for (U8 k = 0; k < 3; k++) // Assign black or white value to each RGB channel in output image
             {
-                inputImage->setPixel(i, j, k, avg);
+                photo->currentImage->setPixel(i, j, k, avg);
             }
         }
     }
+    photo->pushChanges();
 }
 
-void Filters::Invert(Image *inputImage)
+void Filters::Invert(Photo *photo)
 {
-    for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
-    {
-        Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
 
-        for (size_t j = 0; j < inputImage->width; j++) // Loop through each pixel in width
+    for (size_t i = 0; i < height; i++) // Loop through each pixel in height
+    {
+        Utilities::displayProgressBar(i, height - 1); // Display progress bar
+
+        for (size_t j = 0; j < width; j++) // Loop through each pixel in width
         {
             for (U8 k = 0; k < 3; k++) // Loop through RGB channels
             {
-                U8 invert = 0xFF - inputImage->getPixel(j, i, k); // Invert color values
-                inputImage->setPixel(j, i, k, invert);
+                U8 invert = 255 - photo->currentImage->getPixel(j, i, k); // Invert color values
+                photo->currentImage->setPixel(j, i, k, invert);
             }
         }
     }
+    photo->pushChanges();
 }
 
-void Filters::Merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
+//void Filters::Merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
+//{
+//    if (!resize_or_not)
+//    {
+//        // Merge without resizing
+//        for (size_t i = 0; i < outputImage.width; ++i)
+//        {
+//            Utilities::displayProgressBar(i, outputImage.width - 1);
+//            for (size_t j = 0; j < outputImage.height; ++j)
+//            {
+//                for (U8 k = 0; k < 3; ++k)
+//                {
+//                    U8 avg = (inputImage1(i, j, k) + inputImage2(i, j, k)) / 2;
+//                    outputImage(i, j, k) = avg;
+//                }
+//            }
+//        }
+//    }
+//    else
+//    {
+//        // Create copies of input images to avoid modifying originals
+//        Image image1_resized = inputImage1; // Assumes copy constructor exists
+//        Image image2_resized = inputImage2;
+//
+//        // Resize copies to match output dimensions
+//        std::cout << "--------------------------\nResizing first image...\n";
+//        Resize(&image1_resized, outputImage.width, outputImage.height);
+//
+//        std::cout << "\nResizing second image...\n";
+//        Resize(&image2_resized, outputImage.width, outputImage.height);
+//
+//        // Merge resized copies
+//        std::cout << "\nMerging...\n";
+//        for (size_t i = 0; i < outputImage.width; ++i)
+//        {
+//            Utilities::displayProgressBar(i, outputImage.width - 1);
+//            for (size_t j = 0; j < outputImage.height; ++j)
+//            {
+//                for (U8 k = 0; k < 3; ++k)
+//                {
+//                    U8 avg = (image1_resized(i, j, k) + image2_resized(i, j, k)) / 2;
+//                    outputImage(i, j, k) = avg;
+//                }
+//            }
+//        }
+//    }
+//}
+
+void Filters::Flip(Photo *photo, U8 horizontal_or_vertical)
 {
-    if (!resize_or_not)
-    {
-        // Merge without resizing
-        for (size_t i = 0; i < outputImage.width; ++i)
-        {
-            Utilities::displayProgressBar(i, outputImage.width - 1);
-            for (size_t j = 0; j < outputImage.height; ++j)
-            {
-                for (U8 k = 0; k < 3; ++k)
-                {
-                    U8 avg = (inputImage1(i, j, k) + inputImage2(i, j, k)) / 2;
-                    outputImage(i, j, k) = avg;
-                }
-            }
-        }
-    }
-    else
-    {
-        // Create copies of input images to avoid modifying originals
-        Image image1_resized = inputImage1; // Assumes copy constructor exists
-        Image image2_resized = inputImage2;
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
 
-        // Resize copies to match output dimensions
-        std::cout << "--------------------------\nResizing first image...\n";
-        Resize(&image1_resized, outputImage.width, outputImage.height);
-
-        std::cout << "\nResizing second image...\n";
-        Resize(&image2_resized, outputImage.width, outputImage.height);
-
-        // Merge resized copies
-        std::cout << "\nMerging...\n";
-        for (size_t i = 0; i < outputImage.width; ++i)
-        {
-            Utilities::displayProgressBar(i, outputImage.width - 1);
-            for (size_t j = 0; j < outputImage.height; ++j)
-            {
-                for (U8 k = 0; k < 3; ++k)
-                {
-                    U8 avg = (image1_resized(i, j, k) + image2_resized(i, j, k)) / 2;
-                    outputImage(i, j, k) = avg;
-                }
-            }
-        }
-    }
-}
-
-void Filters::Flip(Image *inputImage, U8 horizontal_or_vertical)
-{
-    H_V choice = static_cast<H_V>(horizontal_or_vertical);
-    Image tempImage(*inputImage); // Temporary image for safe modification
+    H_V choice = (H_V) (horizontal_or_vertical);
+    Image tempImage(*photo->currentImage); // Temporary image for safe modification
 
     switch (choice)
     {
     case H_V::H: // Horizontal Flip
     {
-        const int width = static_cast<int>(inputImage->width);
         for (int x = 0; x < width; x++)
         {
             Utilities::displayProgressBar(x, width - 1);
-            for (size_t y = 0; y < inputImage->height; y++)
+            for (size_t y = 0; y < height; y++)
             {
                 for (U8 channel = 0; channel < 3; channel++)
                 {
                     const int mirrored_x = width - 1 - x;
                     tempImage.setPixel(mirrored_x, y, channel,
-                                       inputImage->getPixel(x, y, channel));
+                                       photo->currentImage->getPixel(x, y, channel));
                 }
             }
         }
@@ -145,17 +155,16 @@ void Filters::Flip(Image *inputImage, U8 horizontal_or_vertical)
     }
     case H_V::V: // Vertical Flip
     {
-        const int height = static_cast<int>(inputImage->height);
-        for (size_t x = 0; x < inputImage->width; x++)
+        for (size_t x = 0; x < width; x++)
         {
-            Utilities::displayProgressBar(x, inputImage->width - 1);
+            Utilities::displayProgressBar(x, width - 1);
             for (int y = 0; y < height; y++)
             {
                 for (U8 channel = 0; channel < 3; channel++)
                 {
                     const int mirrored_y = height - 1 - y;
                     tempImage.setPixel(x, mirrored_y, channel,
-                                       inputImage->getPixel(x, y, channel));
+                                       photo->currentImage->getPixel(x, y, channel));
                 }
             }
         }
@@ -163,16 +172,20 @@ void Filters::Flip(Image *inputImage, U8 horizontal_or_vertical)
     }
     }
 
-    *inputImage = tempImage; // Apply final result
+    *photo->currentImage = tempImage; // Apply final result
+    photo->pushChanges();
 }
 
-void Filters::Rotate(Image *inputImage, U16 rotationAngle)
+void Filters::Rotate(Photo *photo, U16 rotationAngle)
 {
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
     ANGLE rAngle = (ANGLE)rotationAngle;
 
     // Original dimensions
-    size_t origWidth = inputImage->width;
-    size_t origHeight = inputImage->height;
+    size_t origWidth = width;
+    size_t origHeight = height;
     size_t newWidth, newHeight;
 
     // Determine new dimensions based on rotation angle
@@ -201,7 +214,7 @@ void Filters::Rotate(Image *inputImage, U16 rotationAngle)
         {
             for (U8 channel = 0; channel < 3; channel++)
             {
-                U8 value = inputImage->getPixel(x, y, channel);
+                U8 value = photo->currentImage->getPixel(x, y, channel);
                 int newX, newY;
 
                 // Calculate new coordinates
@@ -232,47 +245,37 @@ void Filters::Rotate(Image *inputImage, U16 rotationAngle)
     }
 
     // Update inputImage with rotated data
-    delete[] inputImage->imageData; // Assume data is stored as U8* data
-    inputImage->width = newWidth;
-    inputImage->height = newHeight;
-    inputImage->imageData = tempData;
+    delete[] photo->currentImage->imageData; // Assume data is stored as U8* data
+    photo->currentImage->width = newWidth;
+    photo->currentImage->height = newHeight;
+    photo->currentImage->imageData = tempData;
+    photo->pushChanges();
 }
 
-void Filters::exposure(Image *inputImage, bool lighten)
+void Filters::Exposure(Photo *photo, bool lighten)
 {
-    if (lighten) // Lighten image
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
+    for (size_t i = 0; i < width; ++i)
     {
-        for (size_t i = 0; i < inputImage->width; ++i) // Loop through each pixel in width
+        Utilities::displayProgressBar(i, width - 1);
+        for (size_t j = 0; j < height; ++j)
         {
-            Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
-            for (size_t j = 0; j < inputImage->height; ++j)          // Loop through each pixel in height
+            for (U8 k = 0; k < 3; ++k)
             {
-                for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
-                {
-                    U8 light = inputImage->getPixel(i, j, k) * 0.5;                                 // Calculate lightening factor
-                    inputImage->setPixel(i, j, k, min(inputImage->getPixel(i, j, k) + light, 255)); // Apply lightening effect
-                }
+                U8 pixel = photo->currentImage->getPixel(i, j, k);
+                U8 delta = (U8) (pixel * 0.5);
+                int adjusted = lighten ? (pixel + delta) : (pixel - delta);
+                U8 value = (U8)(std::min(adjusted, 255));
+                photo->currentImage->setPixel(i, j, k, value);
             }
         }
     }
-    else // Darken image
-    {
-        for (size_t i = 0; i < inputImage->width; ++i) // Loop through each pixel in width
-        {
-            Utilities::displayProgressBar(i, inputImage->width - 1); // Display progress bar
-            for (size_t j = 0; j < inputImage->height; ++j)          // Loop through each pixel in height
-            {
-                for (U8 k = 0; k < 3; ++k) // Loop through RGB channels
-                {
-                    U8 dark = inputImage->getPixel(i, j, k) * 0.5;                                 // Calculate darkening factor
-                    inputImage->setPixel(i, j, k, min(inputImage->getPixel(i, j, k) - dark, 255)); // Apply darkening effect
-                }
-            }
-        }
-    }
+    photo->pushChanges();
 }
 
-void Filters::Crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height)
+void Filters::Crop(Photo *photo, size_t vertexRow_Num, size_t vertexCol_Num, size_t width, size_t height)
 {
     Image croppedImage(width, height);
     for (size_t i = vertexRow_Num; i < vertexRow_Num + width; i++)
@@ -281,40 +284,45 @@ void Filters::Crop(Image *inputImage, size_t vertexRow_Num, size_t vertexCol_Num
 
         for (size_t j = vertexCol_Num; j < vertexCol_Num + height; j++)
         {
-            for (U8 k = 0; k < inputImage->channels; k++)
-            {
-                croppedImage(i - vertexRow_Num, j - vertexCol_Num, k) = inputImage->getPixel(i, j, k);
-            }
+            for (U8 k = 0; k < 3; k++)
+                croppedImage(i - vertexRow_Num, j - vertexCol_Num, k) = photo->currentImage->getPixel(i, j, k);
         }
     }
-    swap(inputImage->imageData, croppedImage.imageData);
-    inputImage->width = width;
-    inputImage->height = height;
+    swap(photo->currentImage->imageData, croppedImage.imageData);
+    photo->currentImage->width = width;
+    photo->currentImage->height = height;
+    photo->pushChanges();
 }
 
-void Filters::Frame(Image *inputImage, int fancy, int color,
+void Filters::Frame(Photo *photo, int fancy, int color,
                     const std::unordered_map<U8, std::vector<U16>> &color_to_rgb)
 {
-    size_t cornerSize = min(inputImage->height, inputImage->width) / 20; // Calculate corner size for the Frame
+    using namespace Utilities;
+    using namespace Validations;
+
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
+    size_t cornerSize = min(height, width) / 20; // Calculate corner size for the Frame
 
     if (fancy) // Apply fancy Frame
     {
         // Fancy Design
-        for (size_t i = 0; i < inputImage->height; i++) // Loop through each pixel in height
+        for (size_t i = 0; i < height; i++) // Loop through each pixel in height
         {
-            Utilities::displayProgressBar(i, inputImage->height - 1); // Display progress bar
-            for (size_t j = 0; j < inputImage->width; j++)            // Loop through each pixel in width
+            Utilities::displayProgressBar(i, height - 1); // Display progress bar
+            for (size_t j = 0; j < width; j++)            // Loop through each pixel in width
             {
                 // Calculate equivalent coordinates for symmetry
-                size_t equivalent_i = (i < inputImage->height / 2 ? i : inputImage->height - i - 1);
-                size_t equivalent_j = (j < inputImage->width / 2 ? j : inputImage->width - j - 1);
+                size_t equivalent_i = (i < height / 2 ? i : height - i - 1);
+                size_t equivalent_j = (j < width / 2 ? j : width - j - 1);
 
                 // Calculate radial distances for different Frame components
-                float dist_1 = Utilities::radialDistance(equivalent_i, equivalent_j, (0.4f) * cornerSize,
+                float dist_1 = radialDistance(equivalent_i, equivalent_j, (0.4f) * cornerSize,
                                                          (1.775f) *
                                                              cornerSize);
 
-                float dist_2 = Utilities::radialDistance(equivalent_i, equivalent_j,
+                float dist_2 = radialDistance(equivalent_i, equivalent_j,
                                                          (1.775f) *
                                                              cornerSize,
                                                          (0.4f) * cornerSize);
@@ -324,21 +332,18 @@ void Filters::Frame(Image *inputImage, int fancy, int color,
                     ((0.22f) * cornerSize < dist_2 && dist_2 < 0.3f * cornerSize))
                 {
                     for (U8 k = 0; k < 3; k++)
-                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
+                        photo->currentImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                 }
-                else if (Utilities::Validations::v_inRectFrame(equivalent_i, equivalent_j,
-                                                               inputImage->height / 2, inputImage->width / 2,
-                                                               inputImage->height / 2, inputImage->width / 2,
-                                                               0.1 * cornerSize))
+                else if (v_inRectFrame(equivalent_i, equivalent_j,height / 2, width / 2,height / 2, width / 2,0.1 * cornerSize))
                 {
                     for (U8 k = 0; k < 3; k++)
-                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
+                        photo->currentImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                 }
                 // Add more conditions for other rectangular frames or custom designs if needed
                 else
                 {
                     for (U8 k = 0; k < 3; k++)
-                        inputImage->setPixel(j, i, k, inputImage->getPixel(j, i, k)); // Copy original pixel if not in Frame
+                        photo->currentImage->setPixel(j, i, k, photo->currentImage->getPixel(j, i, k)); // Copy original pixel if not in Frame
                 }
             }
         }
@@ -346,14 +351,14 @@ void Filters::Frame(Image *inputImage, int fancy, int color,
     else
     {
         // Simple Frame
-        for (size_t i = 0; i < inputImage->height; i++)
+        for (size_t i = 0; i < height; i++)
         {
-            Utilities::displayProgressBar(i, inputImage->height - 1);
-            for (size_t j = 0; j < inputImage->width; j++)
+            Utilities::displayProgressBar(i, height - 1);
+            for (size_t j = 0; j < width; j++)
             {
                 // Convert to signed integers to avoid underflow and ambiguity
-                int center_i = static_cast<int>(inputImage->height / 2);
-                int center_j = static_cast<int>(inputImage->width / 2);
+                int center_i = static_cast<int>(height / 2);
+                int center_j = static_cast<int>(width / 2);
                 int signed_i = static_cast<int>(i);
                 int signed_j = static_cast<int>(j);
 
@@ -369,17 +374,21 @@ void Filters::Frame(Image *inputImage, int fancy, int color,
                 {
                     for (U8 k = 0; k < 3; k++)
                     {
-                        inputImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
+                        photo->currentImage->setPixel(j, i, k, color_to_rgb.at(color)[k]);
                     }
                 }
             }
         }
     }
+    photo->pushChanges();
 }
 
-void Filters::DetectEdges(Image *inputImage)
+void Filters::DetectEdges(Photo *photo)
 {
-    Image outputImage(inputImage->width, inputImage->height);
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
+    Image outputImage(width, height);
 
     const int sobelX[3][3] = {{-1, 0, 1},
                               {-2, 0, 2},
@@ -387,11 +396,11 @@ void Filters::DetectEdges(Image *inputImage)
     const int sobelY[3][3] = {{-1, -2, -1},
                               {0, 0, 0},
                               {1, 2, 1}};
-    for (size_t y = 1; y + 1 < inputImage->height; ++y)
-    {                                                             // Loop through each pixel in height
-        Utilities::displayProgressBar(y, inputImage->height - 2); // Display progress bar
-        for (size_t x = 1; x + 1 < inputImage->width; ++x)
-        { // Loop through each pixel in width
+    for (size_t y = 1; y + 1 < height; ++y) // Loop through each pixel in height
+    {
+        Utilities::displayProgressBar(y, height - 2); // Display progress bar
+        for (size_t x = 1; x + 1 < width; ++x) // Loop through each pixel in width
+        {
             float gradientX = 0.0;
             float gradientY = 0.0;
             for (int j = -1; j <= 1; ++j)
@@ -399,8 +408,8 @@ void Filters::DetectEdges(Image *inputImage)
                 for (int i = -1; i <= 1; ++i)
                 {
                     // Compute gradients using Sobel operator
-                    gradientX += inputImage->getPixel(x + i, y + j, 0) * sobelX[j + 1][i + 1];
-                    gradientY += inputImage->getPixel(x + i, y + j, 0) * sobelY[j + 1][i + 1];
+                    gradientX += photo->currentImage->getPixel(x + i, y + j, 0) * sobelX[j + 1][i + 1];
+                    gradientY += photo->currentImage->getPixel(x + i, y + j, 0) * sobelY[j + 1][i + 1];
                 }
             }
             float magnitude = sqrt(gradientX * gradientX + gradientY * gradientY); // Calculate magnitude
@@ -411,17 +420,21 @@ void Filters::DetectEdges(Image *inputImage)
             outputImage(x, y, 2) = magnitude;
         }
     }
-    swap(inputImage->imageData, outputImage.imageData);
+    swap(photo->currentImage->imageData, outputImage.imageData);
+    photo->pushChanges();
 }
 
-Image &Filters::Resize(Image *inputImage, size_t targetWidth, size_t targetHeight)
+Image &Filters::Resize(Photo *photo, size_t targetWidth, size_t targetHeight)
 {
+    const size_t width = photo->currentImage->width;
+    const size_t height = photo->currentImage->height;
+
     // Create temporary image for result
     Image result(targetWidth, targetHeight);
 
     // Calculate scaling ratios (original/target for both directions)
-    const float widthRatio = static_cast<float>(inputImage->width) / targetWidth;
-    const float heightRatio = static_cast<float>(inputImage->height) / targetHeight;
+    const float widthRatio = static_cast<float>(width) / targetWidth;
+    const float heightRatio = static_cast<float>(height) / targetHeight;
 
     // Process all destination pixels using nearest-neighbor interpolation
     for (size_t dstY = 0; dstY < targetHeight; ++dstY)
@@ -433,47 +446,51 @@ Image &Filters::Resize(Image *inputImage, size_t targetWidth, size_t targetHeigh
             const int srcX = std::clamp(
                 static_cast<int>(dstX * widthRatio),
                 0,
-                static_cast<int>(inputImage->width) - 1);
+                static_cast<int>(width) - 1);
             const int srcY = std::clamp(
                 static_cast<int>(dstY * heightRatio),
                 0,
-                static_cast<int>(inputImage->height) - 1);
+                static_cast<int>(height) - 1);
 
             // Copy all color channels
             for (U8 channel = 0; channel < 3; ++channel)
             {
-                const U8 pixelValue = inputImage->getPixel(srcX, srcY, channel);
+                const U8 pixelValue = photo->currentImage->getPixel(srcX, srcY, channel);
                 result.setPixel(dstX, dstY, channel, pixelValue);
             }
         }
     }
 
     // Swap image data and update dimensions
-    std::swap(inputImage->imageData, result.imageData);
-    inputImage->width = targetWidth;
-    inputImage->height = targetHeight;
+    std::swap(photo->currentImage->imageData, result.imageData);
+    photo->currentImage->width = targetWidth;
+    photo->currentImage->height = targetHeight;
 
+    photo->pushChanges();
     // Return reference to modified input image
-    return *inputImage;
+    return *photo->currentImage;
 }
 
-void Filters::Blur(Image* inputImage, U8 blurLevel) {
-    const int width = inputImage->width;
-    const int height = inputImage->height;
-    const int channels = inputImage->channels;
+void Filters::Blur(Photo *photo, U8 blurLevel)
+{
+    const int width = photo->currentImage->width;
+    const int height = photo->currentImage->height;
     const int radius = std::clamp(static_cast<int>(blurLevel), 1, 15);  // Limit maximum radius
 
     Image tempImage(width, height);
 
     // Create integral images for each channel
-    std::vector<std::vector<long long>> integrals(channels,
+    std::vector<std::vector<long long>> integrals(3,
                                                   std::vector<long long>(width * height, 0));
 
     // Build integral images
-    for (int c = 0; c < channels; ++c) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                long long current = inputImage->getPixel(x, y, c);
+    for (int c = 0; c < 3; ++c)
+    {
+        for (int y = 0; y < height; ++y)
+        {
+            for (int x = 0; x < width; ++x)
+            {
+                long long current = photo->currentImage->getPixel(x, y, c);
                 if(x > 0) current += integrals[c][y*width + (x-1)];
                 if(y > 0) current += integrals[c][(y-1)*width + x];
                 if(x > 0 && y > 0) current -= integrals[c][(y-1)*width + (x-1)];
@@ -483,8 +500,10 @@ void Filters::Blur(Image* inputImage, U8 blurLevel) {
     }
 
     // Apply Blur using integral images
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
             const int x1 = std::max(0, x - radius);
             const int y1 = std::max(0, y - radius);
             const int x2 = std::min(width-1, x + radius);
@@ -492,7 +511,8 @@ void Filters::Blur(Image* inputImage, U8 blurLevel) {
 
             const int area = (x2 - x1 + 1) * (y2 - y1 + 1);
 
-            for (int c = 0; c < channels; ++c) {
+            for (int c = 0; c < 3; ++c)
+            {
                 long long sum = integrals[c][y2*width + x2];
                 if(x1 > 0) sum -= integrals[c][y2*width + (x1-1)];
                 if(y1 > 0) sum -= integrals[c][(y1-1)*width + x2];
@@ -503,42 +523,50 @@ void Filters::Blur(Image* inputImage, U8 blurLevel) {
         }
     }
 
-    std::swap(inputImage->imageData, tempImage.imageData);
+    std::swap(photo->currentImage->imageData, tempImage.imageData);
+    photo->pushChanges();
 }
 
-void Filters::Sunlight(Image *inputImage)
+void Filters::Sunlight(Photo *photo)
 {
-    Image outputImage(inputImage->width, inputImage->height);
+    const int width = photo->currentImage->width;
+    const int height = photo->currentImage->height;
+
+    Image outputImage(width, height);
     // Apply Sunlight effect by reducing intensity of blue channel
-    for (size_t i = 0; i < inputImage->width; ++i)
+    for (size_t i = 0; i < width; ++i)
     {
-        Utilities::displayProgressBar(i, inputImage->width - 1);
-        for (size_t j = 0; j < inputImage->height; ++j)
+        Utilities::displayProgressBar(i, width - 1);
+        for (size_t j = 0; j < height; ++j)
         {
             // Keep red and green channels unchanged, reduce blue channel intensity
-            outputImage(i, j, 0) = inputImage->getPixel(i, j, 0);
-            outputImage(i, j, 1) = inputImage->getPixel(i, j, 1);
-            outputImage(i, j, 2) = inputImage->getPixel(i, j, 2) - inputImage->getPixel(i, j, 2) / 4;
+            outputImage(i, j, 0) = photo->currentImage->getPixel(i, j, 0);
+            outputImage(i, j, 1) = photo->currentImage->getPixel(i, j, 1);
+            outputImage(i, j, 2) = photo->currentImage->getPixel(i, j, 2) - photo->currentImage->getPixel(i, j, 2) / 4;
         }
     }
 
-    std::swap(inputImage->imageData, outputImage.imageData);
+    std::swap(photo->currentImage->imageData, outputImage.imageData);
+    photo->pushChanges();
 }
 
-void Filters::OilPainting(Image *inputImage)
+void Filters::OilPainting(Photo *photo)
 {
-    Image outputImage(inputImage->width, inputImage->height);
+    const int width = photo->currentImage->width;
+    const int height = photo->currentImage->height;
+
+    Image outputImage(width, height);
     // Apply oil painting effect based on intensity levels and neighborhood pixels
-    U8 RADIUS = min(5, (((inputImage->height * inputImage->width) / 36000) * 2));
+    U8 RADIUS = min(5, (((height * width) / 36000) * 2));
     if (RADIUS < 2)
         RADIUS = 2;
 
     const U8 LEVEL_SIZE = 2;
 
-    for (int i = 0; i < inputImage->height; i++)
+    for (int i = 0; i < height; i++)
     {
-        Utilities::displayProgressBar(i, inputImage->height - 1);
-        for (int j = 0; j < inputImage->width; j++)
+        Utilities::displayProgressBar(i, height - 1);
+        for (int j = 0; j < width; j++)
         {
             vector<int> intensity_count(LEVEL_SIZE + 1, 0);
             vector<vector<int>> color_sums(LEVEL_SIZE + 1, vector<int>(3, 0));
@@ -548,13 +576,13 @@ void Filters::OilPainting(Image *inputImage)
             {
                 for (int n = j - RADIUS; n <= j + RADIUS; n++)
                 {
-                    if (m < 0 || n < 0 || m >= inputImage->height || n >= inputImage->width)
+                    if (m < 0 || n < 0 || m >= height || n >= width)
                         continue;
 
-                    int current_intensity = ((inputImage->getPixel(n, m, 0) + inputImage->getPixel(n, m, 1) + inputImage->getPixel(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
+                    int current_intensity = ((photo->currentImage->getPixel(n, m, 0) + photo->currentImage->getPixel(n, m, 1) + photo->currentImage->getPixel(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
                     intensity_count[current_intensity]++;
                     for (U8 k = 0; k < 3; k++)
-                        color_sums[current_intensity][k] += inputImage->getPixel(n, m, k);
+                        color_sums[current_intensity][k] += photo->currentImage->getPixel(n, m, k);
                 }
             }
 
@@ -566,49 +594,54 @@ void Filters::OilPainting(Image *inputImage)
         }
     }
 
-    std::swap(inputImage->imageData, outputImage.imageData);
+    std::swap(photo->currentImage->imageData, outputImage.imageData);
+    photo->pushChanges();
 }
 
-void Filters::OldTV(Image *inputImage)
+void Filters::OldTV(Photo *photo)
 {
-    Image outputImage(inputImage->width, inputImage->height);
+    const int width = photo->currentImage->width;
+    const int height = photo->currentImage->height;
+
+    Image outputImage(width, height);
     // Initialize random number generator for noise
     random_device rd;
     mt19937 gen(rd());
     normal_distribution<> distribution(0, 25);
 
     // Calculate total thickness of noise lines based on image size
-    int total_thickness = inputImage->height / 30;
-    if (min(inputImage->height, inputImage->width) < 500)
+    int total_thickness = height / 30;
+    if (min(height, width) < 500)
         total_thickness *= 3;
-    else if (min(inputImage->height, inputImage->width) < 1000)
+    else if (min(height, width) < 1000)
         total_thickness *= 2;
 
-    for (int i = 0; i < inputImage->height; i++)
+    for (int i = 0; i < height; i++)
     {
-        Utilities::displayProgressBar(i, inputImage->height - 1);
-        for (int j = 0; j < inputImage->width; j++)
+        Utilities::displayProgressBar(i, height - 1);
+        for (int j = 0; j < width; j++)
         {
             double noise = distribution(gen); // Generate random noise value
 
             // Apply noise with different intensities based on line thickness
             if ((i % total_thickness) < total_thickness * 0.65)
             {
-                for (U8 k = 0; k < inputImage->channels; k++)
+                for (U8 k = 0; k < 3; k++)
                 {
-                    double pixel_value = inputImage->getPixel(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);    // Add noise and adjust blue channel
+                    double pixel_value = photo->currentImage->getPixel(j, i, k) + 3 * noise + (k == 2 ? 110 : 90);    // Add noise and adjust blue channel
                     outputImage(j, i, k) = std::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
                 }
             }
             else
             {
-                for (U8 k = 0; k < inputImage->channels; k++)
+                for (U8 k = 0; k < 3; k++)
                 {
-                    double pixel_value = inputImage->getPixel(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);     // Add noise with different intensity
+                    double pixel_value = photo->currentImage->getPixel(j, i, k) + 2 * noise + (k == 2 ? 25 : 20);     // Add noise with different intensity
                     outputImage(j, i, k) = std::clamp(pixel_value, 0.0, 255.0); // Clamp pixel value within valid range
                 }
             }
         }
     }
-    std::swap(inputImage->imageData, outputImage.imageData);
+    std::swap(photo->currentImage->imageData, outputImage.imageData);
+    photo->pushChanges();
 }
