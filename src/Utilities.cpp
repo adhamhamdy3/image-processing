@@ -101,13 +101,11 @@ string Utilities::Validations::v_ImgName(const string &prompt, bool existing)
     {
         cout << endl;
         cout << prompt; // Display the prompt
-        string input;
-        cin >> input;                                        // Get user input
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
+        if (!getline(cin, filename)) break; // Get user input
 
         regex valid_image_filename(R"(\s*(.+\.(?:jpg|jpeg|png|bmp|tga))\s*)"); // Define regex pattern for valid filename (accepts full paths)
         smatch matches;
-        regex_match(input, matches, valid_image_filename); // Match input against pattern
+        regex_match(filename, matches, valid_image_filename); // Match input against pattern
 
         bool file_exists = true;
         if (existing)
