@@ -11,7 +11,7 @@ void Utilities::displayProgressBar(size_t currentIndex, size_t maxIndex, const s
 
 int Utilities::Validations::v_numericalInput(const std::string &prompt, int l, int r)
 {
-    U8 num;      // Variable to store the integer
+    int num;     // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
         try
@@ -50,7 +50,7 @@ int Utilities::Validations::v_numericalInput(const std::string &prompt, int l, i
 
 int Utilities::Validations::v_numericalInput(const std::string &prompt, std::vector<int> valueList)
 {
-    U8 num;      // Variable to store the integer
+    int num;     // Variable to store the integer
     while (true) // Continue until a valid input is received
     {
         try
@@ -74,7 +74,7 @@ int Utilities::Validations::v_numericalInput(const std::string &prompt, std::vec
             if (find(valueList.begin(), valueList.end(), num) == valueList.end()) // Check if input is not in the list
             {
                 cout << "Please enter a number from (";
-                for (int i = 0; i < valueList.size() - 1; i++)
+                for (size_t i = 0; i < valueList.size() - 1; i++)
                     cout << valueList[i] << ", ";
                 cout << valueList[valueList.size() - 1] << ")" << "\n"; // Display list error message
                 continue;                                               // Continue to next iteration
@@ -105,7 +105,7 @@ string Utilities::Validations::v_ImgName(const string &prompt, bool existing)
         cin >> input;                                        // Get user input
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
 
-        regex valid_image_filename(R"(\s*([^.\/]+\.(?:jpg|png|bmp|tga))\s*)"); // Define regex pattern for valid filename
+        regex valid_image_filename(R"(\s*(.+\.(?:jpg|jpeg|png|bmp|tga))\s*)"); // Define regex pattern for valid filename (accepts full paths)
         smatch matches;
         regex_match(input, matches, valid_image_filename); // Match input against pattern
 
@@ -129,8 +129,7 @@ string Utilities::Validations::v_ImgName(const string &prompt, bool existing)
         }
         else
         {
-            cerr << "Invalid filename. Please enter a valid filename with one of the following extensions: .jpg, .png, "
-                    ".bmp, .tga"
+            cerr << "Invalid path. Please enter a valid file path with one of the following extensions: .jpg, .jpeg, .png, .bmp, .tga"
                  << endl; // Display error message
         }
     }
@@ -168,8 +167,8 @@ Image Utilities::importIMG(const std::string &fileName)
 
 void Utilities::exportIMG(Image &outputImg)
 {
-    string output_image_prompt = "Please enter the filename (NOT FILEPATH, including extension) to store the edited image "
-                                 "\n(Available formats: .jpg, .png, .bmp, .tga): ";
+    string output_image_prompt = "Please enter the file path (including extension) to store the edited image "
+                                 "\n(Example: /home/user/output.png)\n(Available formats: .jpg, .jpeg, .png, .bmp, .tga): ";
     string output_filename = Utilities::Validations::v_ImgName(output_image_prompt); // Get a valid output filename
     cout << endl
          << "Saving.. " << endl;

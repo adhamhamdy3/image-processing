@@ -18,18 +18,27 @@ const std::string FilterConstants::FILTER_MENU =
     "\nAvailable Filters: \n"
     " 1)  Gray Scale \n 2)  Black-and-White \n 3)  Invert \n 4)  Merge \n 5)  Flip \n 6)  Rotate \n"
     " 7)  Lighten/Darken \n 8)  Crop \n 9)  Frame \n 10) Detect Edges \n 11) Resize \n 12) Blur \n"
-    " 13) Sunlight \n 14) Oil Painting \n 15) Old TV \n 16) Quit \n\n"
-    "Choose a filter, or quit (1-16): ";
+    " 13) Sunlight \n 14) Oil Painting \n 15) Old TV \n 16) Back to Main Menu \n\n"
+    "Choose a filter (1-16): ";
+
+const std::string FilterConstants::MAIN_MENU =
+    "\n==========================================\n"
+    "         Image Editor v1.0\n"
+    "==========================================\n"
+    " 1) Apply Filter\n"
+    " 2) About\n"
+    " 3) Quit\n"
+    "==========================================\n"
+    "Your choice (1-3): ";
 
 std::string PromptHandlers::ConstantPrompts::img1_Prompt(U8 choice)
 {
-    return {"Please enter the filename (NOT FILEPATH, including extension) of the " + std::string(choice == 4 ? "first " : "") + "image (must exist in this directory) " + "\n" + "(Available formats: .jpg, .png, .bmp, .tga): "};
+    return {"Please enter the file path (absolute or relative) of the " + std::string(choice == 4 ? "first " : "") + "image " + "\n" + "(Available formats: .jpg, .jpeg, .png, .bmp, .tga): "};
 }
 
-const std::string PromptHandlers::ConstantPrompts::img2_Prompt = "Please enter the filename (NOT FILEPATH, "
-                                                                 "including extension) of the second image "
-                                                                 "(must exist in this directory) \n(Available formats: "
-                                                                 ".jpg, .png, .bmp, .tga): ";
+const std::string PromptHandlers::ConstantPrompts::img2_Prompt = "Please enter the file path (absolute or relative) "
+                                                                 "of the second image \n(Available formats: "
+                                                                 ".jpg, .jpeg, .png, .bmp, .tga): ";
 
 // Filters Prompts
 const std::string PromptHandlers::ConstantPrompts::mergeFilterArg = "Choose whether to Crop and Merge the common part of"
@@ -79,8 +88,8 @@ const std::string PromptHandlers::ConstantPrompts::resizeFilter_hArg = "Choose t
 
 
 
-void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
-                 Photo *output, const PromptHandlers::FilterParams &params, int color)
+void applyFilter(FilterOption choice, Photo *input1, [[maybe_unused]] Photo *input2,
+                 [[maybe_unused]] Photo *output, const PromptHandlers::FilterParams &params, int color)
 {
     switch (choice)
     {
@@ -132,5 +141,7 @@ void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
     case FilterOption::OldTV:
         Filters::OldTV(input1);
         break;
+    default:
+        break; // Merge is commented-out; Quit is handled by the caller
     }
 }
