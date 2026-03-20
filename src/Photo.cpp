@@ -1,75 +1,89 @@
 #include "Photo.h"
-
-void Photo::reset()
-{
-    if (!canUndo())
-        return;
-
-    delete currentImage;
-    currentImage = m_originalImage;
-    m_undoSlider = 0;
-}
-
-bool Photo::canUndo() const
-{
-    return !m_undoStack.empty() && m_undoSlider > 0;
-}
-
-bool Photo::canRedo() const
-{
-    return (!m_undoStack.empty()) && (m_undoSlider < m_undoStack.size() - 1);
-}
-
-void Photo::pushChanges()
-{
-    if (*currentImage == *m_originalImage)
-        return;
-
-    m_undoStack.push_back(currentImage);
-    ++m_undoSlider;
-}
+#include <stdexcept>
 
 Photo::Photo(Image *originalIMG)
 {
     if (originalIMG == nullptr)
-    {
         throw std::invalid_argument("The provided image pointer is null!");
-    }
 
-    this->m_originalImage = this->currentImage = originalIMG;
-}
-
-void Photo::undo()
-{
-    if (!canUndo())
-        return;
-
-    this->currentImage = m_undoStack[--m_undoSlider];
+    m_originalImage = originalIMG;
+    currentImage    = new Image(*originalIMG);
+    m_undoSlider    = -1;
 }
 
 Photo::~Photo()
 {
-    this->cleanUp();
+    cleanUp();
+}
+
+bool Photo::canUndo() const
+{
+    return !m_undoStack.empty();
+}
+
+bool Photo::canRedo() const
+{
+    return m_undoSlider < static_cast<int>(m_undoStack.size()) - 1;
+}
+
+void Photo::pushChanges()
+{
+    while (static_cast<int>(m_undoStack.size()) - 1 > m_undoSlider)
+    {
+        delete m_undoStack.back();
+        m_undoStack.pop_back();
+    }
+
+    m_undoStack.push_back(new Image(*currentImage));
+    m_undoSlider = static_cast<int>(m_undoStack.size()) - 1;
+}
+
+void Photo::undo()
+{
+    if (!canUndo()) return;
+
+    delete currentImage;
+
+    if (m_undoSlider > 0)
+    {
+        --m_undoSlider;
+        currentImage = new Image(*m_undoStack[m_undoSlider]);
+    }
+    else
+    {
+        m_undoSlider = -1;
+        currentImage = new Image(*m_originalImage);
+    }
 }
 
 void Photo::redo()
 {
-    if (!canRedo())
-        return;
+    if (!canRedo()) return;
 
-    currentImage = m_undoStack[++m_undoSlider];
+    delete currentImage;
+    ++m_undoSlider;
+    currentImage = new Image(*m_undoStack[m_undoSlider]);
+}
+
+void Photo::reset()
+{
+    for (Image *img : m_undoStack) delete img;
+    m_undoStack.clear();
+    m_undoSlider = -1;
+
+    delete currentImage;
+    currentImage = new Image(*m_originalImage);
 }
 
 void Photo::cleanUp()
 {
-    if (m_originalImage)
-        delete m_originalImage;
-    if (currentImage)
-        delete currentImage;
+    delete m_originalImage;
+    m_originalImage = nullptr;
 
-    for (size_t i = 0; i < m_undoStack.size(); ++i)
-    {
-        if (m_undoStack[i])
-            delete m_undoStack[i];
-    }
+    delete currentImage;
+    currentImage = nullptr;
+
+    for (Image *img : m_undoStack) delete img;
+    m_undoStack.clear();
+    m_undoSlider = -1;
 }
