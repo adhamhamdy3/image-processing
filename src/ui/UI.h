@@ -25,10 +25,17 @@ enum class FilterOption
     Quit = 16
 };
 
+enum class MainMenuOption
+{
+    ApplyFilter = 1,
+    Quit
+};
+
 namespace FilterConstants
 {
     extern const std::unordered_map<U8, std::vector<U16>> FRAME_COLORS;
     extern const std::string FILTER_MENU;
+    extern const std::string MAIN_MENU;
 }
 
 namespace PromptHandlers
@@ -46,7 +53,6 @@ namespace PromptHandlers
         extern const std::string resizeFilter_wArg;
         extern const std::string resizeFilter_hArg;
 
-        // Crop
         std::string cropFilterRow_Arg(size_t);
         std::string cropFilterCol_Arg(size_t);
         std::string cropFilterHeight_Arg(size_t, size_t);
@@ -65,6 +71,9 @@ namespace PromptHandlers
     };
 }
 
+void applyFilter(FilterOption choice, Photo *input1, Photo *input2,
+                 Photo *output, const PromptHandlers::FilterParams &params, int color);
+
 class UI
 {
 public:
@@ -77,6 +86,9 @@ public:
     void Run();
     void cleanUp();
     ~UI();
+
+private:
+    void runFilterLoop();
 };
 
 #endif

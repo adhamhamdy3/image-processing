@@ -78,53 +78,52 @@ void Filters::Invert(Photo *photo)
     photo->pushChanges();
 }
 
-//void Filters::Merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not)
-//{
-//    if (!resize_or_not)
-//    {
-//        // Merge without resizing
-//        for (size_t i = 0; i < outputImage.width; ++i)
-//        {
-//            Utilities::displayProgressBar(i, outputImage.width - 1);
-//            for (size_t j = 0; j < outputImage.height; ++j)
-//            {
-//                for (U8 k = 0; k < 3; ++k)
-//                {
-//                    U8 avg = (inputImage1(i, j, k) + inputImage2(i, j, k)) / 2;
-//                    outputImage(i, j, k) = avg;
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        // Create copies of input images to avoid modifying originals
-//        Image image1_resized = inputImage1; // Assumes copy constructor exists
-//        Image image2_resized = inputImage2;
-//
-//        // Resize copies to match output dimensions
-//        std::cout << "--------------------------\nResizing first image...\n";
-//        Resize(&image1_resized, outputImage.width, outputImage.height);
-//
-//        std::cout << "\nResizing second image...\n";
-//        Resize(&image2_resized, outputImage.width, outputImage.height);
-//
-//        // Merge resized copies
-//        std::cout << "\nMerging...\n";
-//        for (size_t i = 0; i < outputImage.width; ++i)
-//        {
-//            Utilities::displayProgressBar(i, outputImage.width - 1);
-//            for (size_t j = 0; j < outputImage.height; ++j)
-//            {
-//                for (U8 k = 0; k < 3; ++k)
-//                {
-//                    U8 avg = (image1_resized(i, j, k) + image2_resized(i, j, k)) / 2;
-//                    outputImage(i, j, k) = avg;
-//                }
-//            }
-//        }
-//    }
-//}
+void Filters::Merge(Photo *photo1, Photo *photo2, Photo *outputPhoto, U8 resize_or_not)
+{
+    Image &img1 = *photo1->currentImage;
+    Image &img2 = *photo2->currentImage;
+    Image &out  = *outputPhoto->currentImage;
+
+    if (!resize_or_not)
+    {
+        // Merge without resizing (common part)
+        for (int i = 0; i < out.width; ++i)
+        {
+            Utilities::displayProgressBar(i, out.width - 1);
+            for (int j = 0; j < out.height; ++j)
+            {
+                for (U8 k = 0; k < 3; ++k)
+                {
+                    U8 avg = (img1.getPixel(i, j, k) + img2.getPixel(i, j, k)) / 2;
+                    out.setPixel(i, j, k, avg);
+                }
+            }
+        }
+    }
+    else
+    {
+        // Resize both to match output dimensions
+        Photo temp1(new Image(img1));
+        Photo temp2(new Image(img2));
+
+        Filters::Resize(&temp1, out.width, out.height);
+        Filters::Resize(&temp2, out.width, out.height);
+
+        for (int i = 0; i < out.width; ++i)
+        {
+            Utilities::displayProgressBar(i, out.width - 1);
+            for (int j = 0; j < out.height; ++j)
+            {
+                for (U8 k = 0; k < 3; ++k)
+                {
+                    U8 avg = (temp1.currentImage->getPixel(i, j, k) + temp2.currentImage->getPixel(i, j, k)) / 2;
+                    out.setPixel(i, j, k, avg);
+                }
+            }
+        }
+    }
+    outputPhoto->pushChanges();
+}
 
 void Filters::Flip(Photo *photo, U8 horizontal_or_vertical)
 {

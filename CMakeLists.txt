@@ -13,18 +13,23 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 set(SOURCES
     main.cpp
-    src/Filters.cpp
-    src/Image.cpp
-    src/Photo.cpp
-    src/UI.cpp
-    src/Utilities.cpp
+    src/core/Image.cpp
+    src/core/Photo.cpp
+    src/filters/Filters.cpp
+    src/filters/FilterDispatcher.cpp
+    src/ui/UI.cpp
+    src/ui/UIConstants.cpp
+    src/utils/Utilities.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     include
-    src
+    src/core
+    src/filters
+    src/ui
+    src/utils
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE

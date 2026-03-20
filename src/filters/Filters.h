@@ -23,7 +23,7 @@ namespace Filters
     void Grayscale(Photo *photo);
     void Black_White(Photo *photo);
     void Invert(Photo *photo);
-//    void Merge(Image &inputImage1, Image &inputImage2, Image &outputImage, U8 resize_or_not); // TODO check if u can remove output
+    void Merge(Photo *photo1, Photo *photo2, Photo *outputPhoto, U8 resize_or_not);
     void Flip(Photo *photo, U8 horizontal_or_vertical);
     void Rotate(Photo *photo, U16 rotationAngle);
     void Exposure(Photo *photo, bool lighten);
