@@ -90,7 +90,7 @@ Image &Image::operator=(const Image &image)
 
 Image::~Image()
 {
-    if (!imageData)
+    if (imageData)
     {
         stbi_image_free(imageData);
     }
@@ -114,7 +114,7 @@ bool Image::loadNewImage(const std::string &filename)
         std::cerr << "Unsupported File Format" << '\n';
         throw std::invalid_argument("File Extension is not supported, Only .JPG, JPEG, .BMP, .PNG, .TGA are supported");
     }
-    if (!imageData)
+    if (imageData)
     {
         stbi_image_free(imageData);
     }
@@ -169,17 +169,17 @@ bool Image::saveImage(const std::string &outputFilename)
 
 U8 &Image::getPixel(size_t x, size_t y, U8 c)
 {
-    if (x > width || x < 0)
+    if (x >= (size_t)width)
     {
         std::cerr << "Out of width bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed width value");
     }
-    if (y > height || y < 0)
+    if (y >= (size_t)height)
     {
         std::cerr << "Out of height bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed height value");
     }
-    if (c < 0 || c > 2)
+    if (c > 2)
     {
         std::cerr << "Out of channels bounds" << '\n';
         throw std::out_of_range("Out of bounds, You only have 3 channels in RGB");
@@ -190,17 +190,17 @@ U8 &Image::getPixel(size_t x, size_t y, U8 c)
 
 const U8 &Image::getPixel(size_t x, size_t y, U8 c) const
 {
-    if (x > width || x < 0)
+    if (x >= (size_t)width)
     {
         std::cerr << "Out of width bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed width value");
     }
-    if (y > height || y < 0)
+    if (y >= (size_t)height)
     {
         std::cerr << "Out of height bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed height value");
     }
-    if (c < 0 || c > 2)
+    if (c > 2)
     {
         std::cerr << "Out of channels bounds" << '\n';
         throw std::out_of_range("Out of bounds, You only have 3 channels in RGB");
@@ -211,17 +211,17 @@ const U8 &Image::getPixel(size_t x, size_t y, U8 c) const
 
 void Image::setPixel(size_t x, size_t y, U8 c, U8 value)
 {
-    if (x > width || x < 0)
+    if (x >= (size_t)width)
     {
         std::cerr << "Out of width bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed width value");
     }
-    if (y > height || y < 0)
+    if (y >= (size_t)height)
     {
         std::cerr << "Out of height bounds" << '\n';
         throw std::out_of_range("Out of bounds, Cannot exceed height value");
     }
-    if (c < 0 || c > 2)
+    if (c > 2)
     {
         std::cerr << "Out of channels bounds" << '\n';
         throw std::out_of_range("Out of bounds, You only have 3 channels in RGB");
@@ -242,12 +242,12 @@ U8 &Image::operator()(size_t row, size_t col, U8 channel)
 
 bool Image::operator==(const Image &other) const
 {
-    bool eqDimensions = (this->width != other.width || this->height != other.height);
-    if (!eqDimensions)
+    bool sameDimensions = (this->width == other.width && this->height == other.height);
+    if (!sameDimensions)
         return false;
-    for (size_t i = 0; i < this->width; ++i)
+    for (size_t i = 0; i < (size_t)this->width; ++i)
     {
-        for (int j = 0; j < this->height; ++j)
+        for (size_t j = 0; j < (size_t)this->height; ++j)
         {
             for (U8 k = 0; k < 3; ++k)
             {
