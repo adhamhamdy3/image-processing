@@ -138,14 +138,14 @@ void Filters::Flip(Photo *photo, U8 horizontal_or_vertical)
     {
     case H_V::H: // Horizontal Flip
     {
-        for (int x = 0; x < width; x++)
+        for (size_t x = 0; x < width; x++)
         {
             Utilities::displayProgressBar(x, width - 1);
             for (size_t y = 0; y < height; y++)
             {
                 for (U8 channel = 0; channel < 3; channel++)
                 {
-                    const int mirrored_x = width - 1 - x;
+                    const size_t mirrored_x = width - 1 - x;
                     tempImage.setPixel(mirrored_x, y, channel,
                                        photo->currentImage->getPixel(x, y, channel));
                 }
@@ -158,11 +158,11 @@ void Filters::Flip(Photo *photo, U8 horizontal_or_vertical)
         for (size_t x = 0; x < width; x++)
         {
             Utilities::displayProgressBar(x, width - 1);
-            for (int y = 0; y < height; y++)
+            for (size_t y = 0; y < height; y++)
             {
                 for (U8 channel = 0; channel < 3; channel++)
                 {
-                    const int mirrored_y = height - 1 - y;
+                    const size_t mirrored_y = height - 1 - y;
                     tempImage.setPixel(x, mirrored_y, channel,
                                        photo->currentImage->getPixel(x, y, channel));
                 }
@@ -529,8 +529,8 @@ void Filters::Blur(Photo *photo, U8 blurLevel)
 
 void Filters::Sunlight(Photo *photo)
 {
-    const int width = photo->currentImage->width;
-    const int height = photo->currentImage->height;
+    const size_t width  = static_cast<size_t>(photo->currentImage->width);
+    const size_t height = static_cast<size_t>(photo->currentImage->height);
 
     Image outputImage(width, height);
     // Apply Sunlight effect by reducing intensity of blue channel
@@ -556,22 +556,21 @@ void Filters::OilPainting(Photo *photo)
     const int height = photo->currentImage->height;
 
     Image outputImage(width, height);
-    // Apply oil painting effect based on intensity levels and neighborhood pixels
+
     U8 RADIUS = min(5, (((height * width) / 36000) * 2));
     if (RADIUS < 2)
         RADIUS = 2;
 
-    const U8 LEVEL_SIZE = 2;
+    const int LEVEL_SIZE = 2;
 
     for (int i = 0; i < height; i++)
     {
         Utilities::displayProgressBar(i, height - 1);
         for (int j = 0; j < width; j++)
         {
-            vector<int> intensity_count(LEVEL_SIZE + 1, 0);
-            vector<vector<int>> color_sums(LEVEL_SIZE + 1, vector<int>(3, 0));
+            int intensity_count[LEVEL_SIZE + 1] = {0};
+            int color_sums[LEVEL_SIZE + 1][3]   = {{0}};
 
-            // Calculate intensity levels and accumulate color sums within neighborhood
             for (int m = i - RADIUS; m <= i + RADIUS; m++)
             {
                 for (int n = j - RADIUS; n <= j + RADIUS; n++)
@@ -579,18 +578,37 @@ void Filters::OilPainting(Photo *photo)
                     if (m < 0 || n < 0 || m >= height || n >= width)
                         continue;
 
-                    int current_intensity = ((photo->currentImage->getPixel(n, m, 0) + photo->currentImage->getPixel(n, m, 1) + photo->currentImage->getPixel(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
+                    int current_intensity = ((photo->currentImage->getPixel(n, m, 0) +
+                                              photo->currentImage->getPixel(n, m, 1) +
+                                              photo->currentImage->getPixel(n, m, 2)) / (255.0 * 3.0)) * LEVEL_SIZE;
+
                     intensity_count[current_intensity]++;
                     for (U8 k = 0; k < 3; k++)
                         color_sums[current_intensity][k] += photo->currentImage->getPixel(n, m, k);
                 }
             }
 
-            auto max_index = max_element(intensity_count.begin(), intensity_count.end());
+            // find dominant intensity bucket
+            int max_val = 0, max_idx = 0;
+            for (int b = 0; b <= LEVEL_SIZE; b++)
+            {
+                if (intensity_count[b] > max_val)
+                {
+                    max_val = intensity_count[b];
+                    max_idx = b;
+                }
+            }
 
-            // Assign pixel color based on dominant intensity level in neighborhood
+            // guard against empty neighborhood
+            if (max_val == 0)
+            {
+                for (U8 k = 0; k < 3; k++)
+                    outputImage(j, i, k) = photo->currentImage->getPixel(j, i, k);
+                continue;
+            }
+
             for (U8 k = 0; k < 3; k++)
-                outputImage(j, i, k) = color_sums[max_index - intensity_count.begin()][k] / *max_index;
+                outputImage(j, i, k) = color_sums[max_idx][k] / max_val;
         }
     }
 
