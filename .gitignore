@@ -61,5 +61,3 @@ compile_commands.json
 
 # PDFs
 *.pdf
-
-CMakeLists.txt
