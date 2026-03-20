@@ -13,16 +13,19 @@ A terminal-based image editor written in C++ supporting a wide range of filters 
 ## Project Structure
 ```
 image-processing/
-├── include/          # stb_image headers
+├── include/              # stb_image headers
+├── output_samples/       # Sample filter outputs
 ├── src/
-│   ├── core/         # Image and Photo classes
-│   ├── filters/      # Filter implementations and dispatcher
-│   ├── ui/           # Menu, constants, and UI logic
-│   └── utils/        # Input validation and utilities
-├── samples/          # Sample input images
-├── tests/            # Test script
+│   ├── core/             # Image and Photo classes
+│   ├── filters/          # Filter implementations and dispatcher
+│   ├── ui/               # Menu, constants, and UI logic
+│   └── utils/            # Input validation and utilities
+├── .gitignore
 ├── CMakeLists.txt
-└── main.cpp
+├── LICENSE
+├── main.cpp
+├── README.md
+└── test_filters.sh
 ```
 
 ## Build
